@@ -8,39 +8,41 @@ set(MX_Defines_Syms
     $<$<CONFIG:Debug>:DEBUG>
 )
 
+set(stm32cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
+
 # STM32CubeMX generated include paths
 set(MX_Include_Dirs
-    ${CMAKE_SOURCE_DIR}/Core/Inc
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Inc
-    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
-    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
+    ${stm32cubemx_gen_dir}/Core/Inc
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc
+    ${stm32cubemx_gen_dir}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
+    ${stm32cubemx_gen_dir}/Drivers/CMSIS/Include
 )
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
-    ${CMAKE_SOURCE_DIR}/Core/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/stm32f1xx_it.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/stm32f1xx_hal_msp.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
-    ${CMAKE_SOURCE_DIR}/startup_stm32f103xb.s
+    ${stm32cubemx_gen_dir}/Core/Src/main.c
+    ${stm32cubemx_gen_dir}/Core/Src/stm32f1xx_it.c
+    ${stm32cubemx_gen_dir}/Core/Src/stm32f1xx_hal_msp.c
+    ${stm32cubemx_gen_dir}/Core/Src/sysmem.c
+    ${stm32cubemx_gen_dir}/Core/Src/syscalls.c
+    ${stm32cubemx_gen_dir}/startup_stm32f103xb.s
 )
 
 # STM32 HAL/LL Drivers
 set(STM32_Drivers_Src
-    ${CMAKE_SOURCE_DIR}/Core/Src/system_stm32f1xx.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c
+    ${stm32cubemx_gen_dir}/Core/Src/system_stm32f1xx.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
+    ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c
 )
 
 # Drivers Midllewares
