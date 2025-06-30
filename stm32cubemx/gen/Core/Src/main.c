@@ -53,7 +53,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+#define main gen_main
+// static
+__weak
 /* USER CODE END 0 */
 
 /**
@@ -64,7 +66,10 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  return 0;
+}
 
+void MX_Init() {
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,12 +95,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
   /* USER CODE END 3 */
 }
 

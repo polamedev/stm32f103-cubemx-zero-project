@@ -12,6 +12,8 @@ set(stm32cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
 # STM32CubeMX generated include paths
 set(MX_Include_Dirs
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    
     ${stm32cubemx_gen_dir}/Core/Inc
     ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
     ${stm32cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc
@@ -21,6 +23,8 @@ set(MX_Include_Dirs
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
+    ${CMAKE_CURRENT_SOURCE_DIR}/stm32cubemx.h
+
     ${stm32cubemx_gen_dir}/Core/Src/main.c
     ${stm32cubemx_gen_dir}/Core/Src/stm32f1xx_it.c
     ${stm32cubemx_gen_dir}/Core/Src/stm32f1xx_hal_msp.c
