@@ -140,7 +140,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+__weak
 /* USER CODE END 4 */
 
 /**
