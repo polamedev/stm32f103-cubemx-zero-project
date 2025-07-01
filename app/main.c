@@ -1,4 +1,4 @@
-#include <stm32cubemx.h>
+#include <cubemx.h>
 
 int main()
 {

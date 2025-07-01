@@ -38,7 +38,7 @@ enable_language(C ASM)
 add_executable(${CMAKE_PROJECT_NAME})
 
 # Add STM32CubeMX generated sources
-add_subdirectory(stm32cubemx)
+add_subdirectory(cubemx)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -68,7 +68,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 )
 
 # Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/stm32cubemx/gen/STM32F103XX_FLASH.ld")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/cubemx/gen/STM32F103XX_FLASH.ld")
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--gc-sections")
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)

@@ -105,7 +105,7 @@ set(CUBEMX_Src
     ${cubemx_gen_dir}/Core/Src/system_stm32f1xx.c
     ${cubemx_gen_dir}/startup_stm32f103xb.s
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/stm32cubemx.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cubemx.h
 )
 
 target_include_directories(cubemx PUBLIC ${CUBEMX_Include_Dirs})
