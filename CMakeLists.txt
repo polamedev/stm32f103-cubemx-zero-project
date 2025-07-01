@@ -67,6 +67,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     st_hal
 )
 
+# Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/stm32cubemx/gen/STM32F103XX_FLASH.ld")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--gc-sections")
+
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
 
 if((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
