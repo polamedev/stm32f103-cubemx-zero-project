@@ -63,11 +63,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    stm32cubemx
-
-    # Add user defined libraries
-    STM32_Drivers
     cubemx
+    st_hal
 )
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
