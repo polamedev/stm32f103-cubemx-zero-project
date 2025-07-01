@@ -65,30 +65,43 @@ set(MX_LINK_LIBS
     STM32_Drivers
     
 )
-# Interface library for includes and symbols
+
+# ------------------------------------------------------------------------------------------------
+# Создание библиотеки stm32cubemx
+
+# На данный строчке создается цель библиотеки (название), но в ней нет еще файлов
+# Ключевое слово INTERFACE, говорит что это библиотека интерфейсов, 
+# которая содержит только header файлы и макроопределения, и их не нужно сбирать
 add_library(stm32cubemx INTERFACE)
-target_include_directories(stm32cubemx INTERFACE ${MX_Include_Dirs})
+
+# Добавляем пути включений и макроопоределения в библиотеку
+# Ключевое слово INTERFACE сообщает CMake, что файлы должны быть доступны в виде интерфейса 
+# библиотеки, то есть они должны быть видны при использовании библиотеки
+target_include_directories(stm32cubemx INTERFACE ${MX_Include_Dirs}) 
 target_compile_definitions(stm32cubemx INTERFACE ${MX_Defines_Syms})
 
-# Create STM32_Drivers static library
+# -------------------------------------------------------------------------------------------------
+
+# Создание библиотеки STM32_Drivers
+
+# Создание цели библиотеки
+# Ключевое слово OBJECT - говорит о создание библиотеки объектных файлов без архивации и линковки
 add_library(STM32_Drivers OBJECT)
+
+# Перечисляем файл для компиляции библиотеки
+# Ключевое слово PRIVATE говорит, что файлы нужны только для сборки данной цели
 target_sources(STM32_Drivers PRIVATE ${STM32_Drivers_Src})
+
+# Подключаем библиотеки 
+# Ключевое слово PUBLIC говорит, что библиотека нужна для сборки цели и для интерфейса данной цели
 target_link_libraries(STM32_Drivers PUBLIC stm32cubemx)
 
+# --------------------------------------------------------------------------------------------------
+# Создание библиотеки генерированной CubeMX
 
-# Add STM32CubeMX generated application sources to the project
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})
+add_library(cubemx OBJECT)
+target_sources(cubemx PRIVATE ${MX_Application_Src})
+target_link_libraries(cubemx PUBLIC stm32cubemx)
 
 # Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${MX_LINK_DIRS})
-
-# Add libraries to the project
-target_link_libraries(${CMAKE_PROJECT_NAME} ${MX_LINK_LIBS})
-
-# Add the map file to the list of files to be removed with 'clean' target
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
-
-# Validate that STM32CubeMX code is compatible with C standard
-if((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
-    message(ERROR "Generated code requires C11 or higher")
-endif()
+# target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${MX_LINK_DIRS})
