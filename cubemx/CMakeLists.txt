@@ -66,8 +66,8 @@ target_include_directories(st_hal_config INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/c
 # Создание библиотеки hal
 
 # Создание цели библиотеки
-# Ключевое слово OBJECT - говорит о создание библиотеки объектных файлов без архивации и линковки
-add_library(st_hal OBJECT)
+# Ключевое слово STATIC - говорит о создание статической библиотеке
+add_library(st_hal STATIC)
 
 set(HAL_Defines_Syms 
     USE_HAL_DRIVER 
@@ -133,4 +133,6 @@ target_sources(cubemx PRIVATE ${CUBEMX_Src})
 
 # PRIVATE нужен так как подключение cubemx само по себе не подключит библиотеку st_hal, ее
 # ее нужно включать для каждого таргета, где будет использован cubemx
-target_link_libraries(cubemx PRIVATE st_hal)
+# Сейчас используется PUBLIC, так как теперь st_hal - статическая библиотека, и она будет линковаться при 
+# подключении объектной библиотеки cubemx
+target_link_libraries(cubemx PUBLIC st_hal)
