@@ -134,5 +134,5 @@ target_sources(cubemx PRIVATE ${CUBEMX_Src})
 # PRIVATE нужен так как подключение cubemx само по себе не подключит библиотеку st_hal, ее
 # ее нужно включать для каждого таргета, где будет использован cubemx
 # Сейчас используется PUBLIC, так как теперь st_hal - статическая библиотека, и она будет линковаться при 
-# подключении объектной библиотеки cubemx
+# подключении объектной библиотеки cubemx (https://stackoverflow.com/questions/75339783/how-can-i-link-a-cmake-object-library-to-another-cmake-object-library)
 target_link_libraries(cubemx PUBLIC st_hal)
