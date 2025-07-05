@@ -1,3 +1,5 @@
+#include "st_hal.h"
+
 #include <cubemx.h>
 
 int main()
