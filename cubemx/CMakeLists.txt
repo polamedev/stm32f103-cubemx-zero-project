@@ -124,7 +124,7 @@ set(CUBEMX_Src
 )
 
 target_include_directories(cubemx 
-    PUBLIC 
+    INTERFACE 
         ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE
         ${cubemx_gen_dir}/Core/Inc
