@@ -51,15 +51,15 @@ target_include_directories(cmsis INTERFACE ${CMSIS_Include_Dirs})
 
 # --------------------------------------------------------------------------------------------------
 
+# Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
+configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_conf/stm32f1xx_hal_conf.h COPYONLY)
+
 # Пользовательская библиотека для конфигурации st HAL, содержит только путь включения до файла
 # с настройками stm32f1xx_hal_conf.h. Такой способ сделан по аналоги с freertos
 
 add_library(st_hal_config INTERFACE)
 
-target_include_directories(st_hal_config SYSTEM
-  INTERFACE
-    ${cubemx_gen_dir}/Core/Inc
-)
+target_include_directories(st_hal_config INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_conf)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -80,7 +80,8 @@ set(HAL_Include_Dirs
 )
 
 cubemx_get_st_hal_files(cubemx_hal_file_list)
-message(STATUS "st_hal_files: " "${cubemx_hal_file_list}")
+list(LENGTH cubemx_hal_file_list cubemx_hal_file_list_size)
+message(STATUS "st_hal_files[${cubemx_hal_file_list_size}]: " "${cubemx_hal_file_list}")
 
 # Дополним полученный список файлов действительными путями до них
 list(TRANSFORM  cubemx_hal_file_list PREPEND  "${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/")
@@ -97,8 +98,11 @@ target_sources(st_hal PRIVATE ${HAL_Src})
 
 # Подключаем библиотеки 
 # Ключевое слово PUBLIC говорит, что библиотека нужна для сборки цели и для интерфейса данной цели
-target_link_libraries(st_hal PUBLIC cmsis st_hal_config)
-
+target_link_libraries(st_hal 
+    PUBLIC 
+        cmsis  
+        st_hal_config
+)
 
 # --------------------------------------------------------------------------------------------------
 # Создание объектной библиотеки CubeMX
@@ -106,13 +110,6 @@ target_link_libraries(st_hal PUBLIC cmsis st_hal_config)
 # Создание цели библиотеки
 # Ключевое слово OBJECT - говорит о создание библиотеки объектных файлов без архивации и линковки
 add_library(cubemx OBJECT)
-
-
-set(CUBEMX_Include_Dirs
-    ${cubemx_gen_dir}/Core/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR} 
-)
-
 
 set(CUBEMX_Src
     ${cubemx_gen_dir}/Core/Src/main.c
@@ -126,6 +123,14 @@ set(CUBEMX_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/cubemx.h
 )
 
-target_include_directories(cubemx PUBLIC ${CUBEMX_Include_Dirs})
+target_include_directories(cubemx 
+    PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE
+        ${cubemx_gen_dir}/Core/Inc
+)
 target_sources(cubemx PRIVATE ${CUBEMX_Src})
+
+# PRIVATE нужен так как подключение cubemx само по себе не подключит библиотеку st_hal, ее
+# ее нужно включать для каждого таргета, где будет использован cubemx
 target_link_libraries(cubemx PRIVATE st_hal)
