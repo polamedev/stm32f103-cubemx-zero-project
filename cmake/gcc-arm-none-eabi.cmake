@@ -10,7 +10,7 @@ set(CMAKE_CXX_COMPILER_ID GNU)
 message(STATUS "Statr cmake toolchain file")
 
 if(("${CMAKE_C_COMPILER}" STREQUAL "/usr/bin/cc") OR ("${CMAKE_C_COMPILER}" STREQUAL ""))
-    message(STATUS "__unspec__ configuretion")
+    message(STATUS "Use __unspec__ configuretion")
 
     set(TOOLCHAIN_PREFIX                arm-none-eabi-)
 
