@@ -23,7 +23,7 @@ include(cmake/cubemx_get_st_hal_files.cmake)
 if(USE_CUBEMX_CMSIS)
     message(STATUS "USE_CUBEMX_CMSIS")
     set(CMSIS_DIR ${cubemx_gen_dir}/Drivers/CMSIS)
-    include(cmake/targets/cmsis.cmake)
+    include(cmake/targets/lib_cmsis.cmake)
 endif()
 
 
@@ -34,7 +34,7 @@ if(USE_CUBEMX_ST_HAL_CONFIG)
     # Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
     configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config/stm32f1xx_hal_conf.h COPYONLY)
     set(ST_HAL_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config)
-    include(cmake/targets/st_hal_config.cmake)
+    include(cmake/targets/lib_st_hal_config.cmake)
 endif()
 
 
@@ -47,7 +47,7 @@ if(USE_CUBEMX_ST_HAL)
     set(ST_HAL_DIR ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver)
     # Установим опцию использования спика файлов, требуемых для компиляции cubemx
     set(USE_CUBEMX_ST_HAL_SRC_LIST ON)
-    include(cmake/targets/st_hal.cmake)
+    include(cmake/targets/lib_st_hal.cmake)
 endif()
 
 # --------------------------------------------------------------------------------------------------
