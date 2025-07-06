@@ -21,17 +21,17 @@ include(cmake/cubemx_get_st_hal_files.cmake)
 
 if(USE_CUBEMX_CMSIS)
     message(STATUS "USE_CUBEMX_CMSIS")
-    include(cmake/cmsis.cmake)
+    include(cmake/targets/cmsis.cmake)
 endif()
 
 
 # --------------------------------------------------------------------------------------------------
-
+# Создание библиотеки для конфигурации st HAL
 if(USE_CUBEMX_HAL_CONFIG)
     message(STATUS "USE_CUBEMX_HAL_CONFIG")
     # Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
     configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_config/stm32f1xx_hal_conf.h COPYONLY)
-    include(cmake/st_hal_config.cmake)
+    include(cmake/targets/st_hal_config.cmake)
 endif()
 
 

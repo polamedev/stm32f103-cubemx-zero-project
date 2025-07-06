@@ -37,6 +37,8 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+
+
 # Add STM32CubeMX generated sources
 option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
 # option(USE_CUBEMX_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" OFF)
@@ -49,6 +51,9 @@ add_subdirectory(cubemx)
 # При использовании USE_CUBEMX_HAL_CONFIG OFF необходимо самостоятельно предоставить библиотеку с инклудом hal_conf
 # add_library(st_hal_config INTERFACE)
 # target_include_directories(st_hal_config INTERFACE app)
+
+
+
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
