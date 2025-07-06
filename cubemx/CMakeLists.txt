@@ -4,8 +4,9 @@ cmake_minimum_required(VERSION 3.22)
 enable_language(C ASM)
 
 option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
-
+option(USE_CUBEMX_ST_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" ON)
 option(USE_CUBEMX_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" ON)
+
 
 # Директория генерации cubemx
 set(cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
@@ -21,16 +22,18 @@ include(cmake/cubemx_get_st_hal_files.cmake)
 
 if(USE_CUBEMX_CMSIS)
     message(STATUS "USE_CUBEMX_CMSIS")
+    set(CMSIS_DIR ${cubemx_gen_dir}/Drivers/CMSIS)
     include(cmake/targets/cmsis.cmake)
 endif()
 
 
 # --------------------------------------------------------------------------------------------------
 # Создание библиотеки для конфигурации st HAL
-if(USE_CUBEMX_HAL_CONFIG)
-    message(STATUS "USE_CUBEMX_HAL_CONFIG")
+if(USE_CUBEMX_ST_HAL_CONFIG)
+    message(STATUS "USE_CUBEMX_ST_HAL_CONFIG")
     # Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
-    configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_config/stm32f1xx_hal_conf.h COPYONLY)
+    configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config/stm32f1xx_hal_conf.h COPYONLY)
+    set(ST_HAL_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config)
     include(cmake/targets/st_hal_config.cmake)
 endif()
 

@@ -40,17 +40,16 @@ add_executable(${CMAKE_PROJECT_NAME})
 
 
 # Add STM32CubeMX generated sources
-option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
-# option(USE_CUBEMX_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" OFF)
-
+# option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" OFF)
+# option(USE_CUBEMX_ST_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" OFF)
 add_subdirectory(cubemx)
 
 # При использовании USE_CUBEMX_CMSIS OFF необходимо самостоятельно подключить библиотеку CMSIS
 # add_subdirectory(lib/drivers/CMSIS)
 
-# При использовании USE_CUBEMX_HAL_CONFIG OFF необходимо самостоятельно предоставить библиотеку с инклудом hal_conf
+# При использовании USE_CUBEMX_ST_HAL_CONFIG OFF необходимо самостоятельно предоставить библиотеку с инклудом hal_conf
 # add_library(st_hal_config INTERFACE)
-# target_include_directories(st_hal_config INTERFACE app)
+# target_include_directories(st_hal_config INTERFACE config)
 
 
 
