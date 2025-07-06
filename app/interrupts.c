@@ -1,7 +1,10 @@
 #include <cubemx.h>
+
+#include <lame/event.h>
+
 #include <stdbool.h>
 
-extern bool speed_blink;
+extern LAME_event key_event;
 
 /**
  * @brief  EXTI line detection callbacks.
@@ -11,6 +14,6 @@ extern bool speed_blink;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == KEY_Pin) {
-        speed_blink = !speed_blink;
+        LAME_event_set(&key_event);
     }
 }

@@ -59,7 +59,7 @@ add_subdirectory(cubemx)
 # set(USE_CUBEMX_ST_HAL_SRC_LIST ON) # Установим опцию использования спика файлов, требуемых для компиляции cubemx
 # add_subdirectory(lib/drivers/STM32F1xx_HAL_Driver)
 
-
+add_subdirectory(lib/lame/lame-c)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -88,6 +88,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
+    lame-c
 )
 
 # Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
