@@ -38,7 +38,11 @@ enable_language(C ASM)
 add_executable(${CMAKE_PROJECT_NAME})
 
 # Add STM32CubeMX generated sources
+option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
 add_subdirectory(cubemx)
+
+# При использовании USE_CUBEMX_CMSIS OFF необходимо самостоятельно подключить библиотеку CMSIS
+# add_subdirectory(lib/drivers/CMSIS)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE

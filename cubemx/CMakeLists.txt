@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.22)
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
+option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
+
 # Директория генерации cubemx
 set(cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
@@ -10,27 +12,15 @@ set(cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 # из любого места, а не только из текущего файла 
 set_property(GLOBAL PROPERTY cubemx_gen_dir_property "${cubemx_gen_dir}")
 
-
 include(cmake/cubemx_get_st_hal_files.cmake)
 
-
 # --------------------------------------------------------------------------------------------------
-# Создание библиотеки cmsis
+# # Создание библиотеки cmsis если задана опция USE_CUBEMX_CMSIS
 
-# На данный строчке создается цель библиотеки (название), но в ней нет еще файлов
-# Ключевое слово INTERFACE, говорит что это библиотека интерфейсов, 
-# которая содержит только header файлы и макроопределения, и их не нужно сбирать
-add_library(cmsis INTERFACE)
-
-set(CMSIS_Include_Dirs
-    ${cubemx_gen_dir}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
-    ${cubemx_gen_dir}/Drivers/CMSIS/Include
-)
-
-# Добавляем пути включений и макроопоределения в библиотеку
-# Ключевое слово INTERFACE сообщает CMake, что файлы должны быть доступны в виде интерфейса 
-# библиотеки, то есть они должны быть видны при использовании библиотеки
-target_include_directories(cmsis INTERFACE ${CMSIS_Include_Dirs})
+if(USE_CUBEMX_CMSIS)
+    message(STATUS "USE_CUBEMX_CMSIS")
+    include(cmake/cmsis.cmake)
+endif()
 
 
 # --------------------------------------------------------------------------------------------------
