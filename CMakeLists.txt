@@ -37,7 +37,9 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-
+# Подключить библиотеку lame_cmakelib
+add_subdirectory(lib/lame/lame_cmakelib)
+message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 
 # Add STM32CubeMX generated sources
 
