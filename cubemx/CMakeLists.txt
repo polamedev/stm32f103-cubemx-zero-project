@@ -5,6 +5,8 @@ enable_language(C ASM)
 
 option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
 
+option(USE_CUBEMX_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" ON)
+
 # Директория генерации cubemx
 set(cubemx_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen)
 
@@ -25,15 +27,12 @@ endif()
 
 # --------------------------------------------------------------------------------------------------
 
-# Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
-configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_conf/stm32f1xx_hal_conf.h COPYONLY)
-
-# Пользовательская библиотека для конфигурации st HAL, содержит только путь включения до файла
-# с настройками stm32f1xx_hal_conf.h. Такой способ сделан по аналоги с freertos
-
-add_library(st_hal_config INTERFACE)
-
-target_include_directories(st_hal_config INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_conf)
+if(USE_CUBEMX_HAL_CONFIG)
+    message(STATUS "USE_CUBEMX_HAL_CONFIG")
+    # Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
+    configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_hal_config/stm32f1xx_hal_conf.h COPYONLY)
+    include(cmake/st_hal_config.cmake)
+endif()
 
 
 # --------------------------------------------------------------------------------------------------
