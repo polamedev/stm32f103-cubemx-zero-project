@@ -5,7 +5,7 @@ enable_language(C ASM)
 
 option(USE_CUBEMX_CMSIS "Использовать CMSIS, сгенерированный CubeMX" ON)
 option(USE_CUBEMX_ST_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" ON)
-option(USE_CUBEMX_HAL_CONFIG "Использовать файл hal_conf, сгенерированный CubeMX" ON)
+option(USE_CUBEMX_ST_HAL "Использовать ST_HAL, сгенерированный CubeMX" ON)
 
 
 # Директория генерации cubemx
@@ -41,45 +41,14 @@ endif()
 # --------------------------------------------------------------------------------------------------
 # Создание библиотеки hal
 
-# Создание цели библиотеки
-# Ключевое слово STATIC - говорит о создание статической библиотеке
-add_library(st_hal STATIC)
-
-set(HAL_Defines_Syms
-    USE_HAL_DRIVER
-    STM32F103xB
-)
-
-
-set(HAL_Include_Dirs
-    ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
-    ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Inc
-)
-
-cubemx_get_st_hal_files(cubemx_hal_file_list)
-list(LENGTH cubemx_hal_file_list cubemx_hal_file_list_size)
-message(STATUS "st_hal_files[${cubemx_hal_file_list_size}]: " "${cubemx_hal_file_list}")
-
-# Дополним полученный список файлов действительными путями до них
-list(TRANSFORM cubemx_hal_file_list PREPEND "${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver/Src/")
-set(HAL_Src
-    ${cubemx_hal_file_list}
-)
-
-target_compile_definitions(st_hal PUBLIC ${HAL_Defines_Syms})
-target_include_directories(st_hal PUBLIC ${HAL_Include_Dirs})
-
-# Перечисляем файл для компиляции библиотеки
-# Ключевое слово PRIVATE говорит, что файлы нужны только для сборки данной цели
-target_sources(st_hal PRIVATE ${HAL_Src})
-
-# Подключаем библиотеки 
-# Ключевое слово PUBLIC говорит, что библиотека нужна для сборки цели и для интерфейса данной цели
-target_link_libraries(st_hal
-    PUBLIC
-    cmsis
-    st_hal_config
-)
+if(USE_CUBEMX_ST_HAL)
+    message(STATUS "USE_CUBEMX_CMSIS")
+    # Установим директорию до исходников hal
+    set(ST_HAL_DIR ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver)
+    # Установим опцию использования спика файлов, требуемых для компиляции cubemx
+    set(USE_CUBEMX_ST_HAL_SRC_LIST ON)
+    include(cmake/targets/st_hal.cmake)
+endif()
 
 # --------------------------------------------------------------------------------------------------
 # Создание объектной библиотеки CubeMX
