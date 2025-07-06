@@ -47,6 +47,10 @@ if(USE_CUBEMX_ST_HAL)
     message(STATUS "USE_CUBEMX_CMSIS")
     # Установим директорию до исходников hal
     set(ST_HAL_DIR ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver)
+
+    # Установка семейства процессора в HAL
+    set(ST_MCU_NAME STM32F103xB)
+
     # Установим опцию использования спика файлов, требуемых для компиляции cubemx
     set(USE_CUBEMX_ST_HAL_SRC_LIST ON)
     # Подключаем файл по созданию таргета из библиотеки lame_cmakelib

@@ -1,6 +1,7 @@
 # Создание библиотеки hal
 
 option(USE_CUBEMX_ST_HAL_SRC_LIST "Использовать требуемый список файлов библиотеки, сгенерированный CubeMX" OFF)
+set(ST_MCU_NAME STM32F103xB CACHE STRING "Тип процесса в HAL")
 
 # Установка пути до исходников, нужно чтобы можно было задать любое расположение с помощью переменных
 if(NOT DEFINED ST_HAL_DIR)
@@ -13,7 +14,7 @@ add_library(st_hal STATIC)
 
 set(HAL_Defines_Syms
     USE_HAL_DRIVER
-    STM32F103xB
+    ${ST_MCU_NAME}
 )
 
 

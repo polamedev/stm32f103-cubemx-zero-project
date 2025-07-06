@@ -1,6 +1,8 @@
 # --------------------------------------------------------------------------------------------------
 # Создание библиотеки cmsis
 
+
+
 # Установка пути до исходников, нужно чтобы можно было задать любое расположение с помощью переменных
 if(NOT DEFINED CMSIS_DIR)
     set(CMSIS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -11,8 +13,11 @@ endif()
 # которая содержит только header файлы и макроопределения, и их не нужно сбирать
 add_library(cmsis INTERFACE)
 
+# Определить имя каталога Device/ST/***
+subdirlist(stm_series ${CMSIS_DIR}/Device/ST)
+
 set(CMSIS_Include_Dirs
-    ${CMSIS_DIR}/Device/ST/STM32F1xx/Include
+    ${CMSIS_DIR}/Device/ST/${stm_series}/Include
     ${CMSIS_DIR}/Include
 )
 
