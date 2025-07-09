@@ -64,7 +64,13 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+// #define NO_WEACT
+#if defined(NO_WEACT)
+#undef  LED_Pin
+#undef  LED_GPIO_Port
+#define LED_Pin GPIO_PIN_13
+#define LED_GPIO_Port GPIOC
+#endif
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

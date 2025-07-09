@@ -153,7 +153,9 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
-
+#if defined(NO_WEACT)
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+#endif
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
