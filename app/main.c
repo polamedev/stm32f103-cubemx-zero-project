@@ -68,8 +68,7 @@ static void cdc_task(void)
                 uint32_t count = tud_cdc_n_read(itf, buf, sizeof(buf));
 
                 // echo back to both serial ports
-                echo_serial_port(0, buf, count);
-                echo_serial_port(1, buf, count);
+                echo_serial_port(itf, buf, count);
             }
         }
     }
