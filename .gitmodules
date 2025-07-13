@@ -1,0 +1,4 @@
+[submodule "lib/tinyusb"]
+	path = lib/tinyusb
+	url = git@github.com:hathach/tinyusb.git
+	branch = 0.18.0
