@@ -1,3 +1,5 @@
+#include "init.h"
+
 #include <cubemx.h>
 #include <st_hal.h>
 
@@ -11,7 +13,6 @@ static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
 static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
 
 LAME_event key_event;
-
 
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case
@@ -99,15 +100,7 @@ int main()
 {
     LAME_event_init(&key_event);
 
-    MX_Init();
-
-    // tud_init(0);
-
-    tusb_rhport_init_t dev_init = {
-        .role  = TUSB_ROLE_DEVICE,
-        .speed = TUSB_SPEED_AUTO,
-    };
-    tusb_init(BOARD_TUD_RHPORT, &dev_init);
+    init();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
