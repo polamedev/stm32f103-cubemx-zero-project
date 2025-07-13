@@ -13,20 +13,6 @@ static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
 LAME_event key_event;
 
 
-size_t board_get_unique_id(uint8_t id[], size_t max_len)
-{
-    (void)max_len;
-    volatile uint32_t *stm32_uuid = (volatile uint32_t *)UID_BASE;
-    uint32_t          *id32       = (uint32_t *)(uintptr_t)id;
-    const uint8_t      len        = 12;
-
-    id32[0] = stm32_uuid[0];
-    id32[1] = stm32_uuid[1];
-    id32[2] = stm32_uuid[2];
-
-    return len;
-}
-
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case
 static void echo_serial_port(uint8_t itf, uint8_t buf[], uint32_t count)

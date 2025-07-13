@@ -67,12 +67,15 @@ add_subdirectory(lib/lame/lame-c)
 
 add_library(tinyusb_config INTERFACE)
 target_include_directories(tinyusb_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/app)
-target_compile_definitions(tinyusb_config INTERFACE CFG_TUSB_MCU=OPT_MCU_STM32F1)
-target_compile_definitions(tinyusb_config INTERFACE STM32F103xB)
+target_compile_definitions(tinyusb_config INTERFACE CFG_TUSB_MCU=OPT_MCU_STM32F1 STM32F103xB)
 
+
+# Add TinyUSB target and port source
 add_subdirectory(lib/tinyusb/src)
-# target_sources(tinyusb PUBLIC
-# )
+target_sources(tinyusb PUBLIC lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c)
+# Для порта требуется cmsis
+target_link_libraries(tinyusb PUBLIC cmsis)
+
 
 
 # Link directories setup
@@ -85,20 +88,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     app/main.c
     app/interrupts.c
-
+    app/board.c
     app/usb_descriptors.c
-
-
-    lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
-
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     config
-
-    lib/tinyusb/hw
 )
 
 # Add project symbols (macros)
