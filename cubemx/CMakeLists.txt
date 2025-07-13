@@ -81,6 +81,15 @@ if(USE_CUBEMX_ST_HAL)
     st_hal_sources("${st_hal_src}")
 endif()
 
+# --------------------------------------------------------------------------
+
+set(USB_Device_Library_Src
+    ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
+    ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
+    ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+    ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
+)
+
 # --------------------------------------------------------------------------------------------------
 # Создание объектной библиотеки CubeMX
 
@@ -97,6 +106,12 @@ set(CUBEMX_Src
     ${cubemx_gen_dir}/Core/Src/system_stm32f1xx.c
     ${cubemx_gen_dir}/startup_stm32f103xb.s
 
+    ${cubemx_gen_dir}/USB_DEVICE/Target/usbd_conf.c
+    ${cubemx_gen_dir}/USB_DEVICE/App/usb_device.c
+    ${cubemx_gen_dir}/USB_DEVICE/App/usbd_desc.c
+    ${cubemx_gen_dir}/USB_DEVICE/App/usbd_cdc_if.c
+    ${USB_Device_Library_Src}
+
     ${CMAKE_CURRENT_SOURCE_DIR}/cubemx.h
 )
 
@@ -106,6 +121,11 @@ target_include_directories(cubemx
 
     PRIVATE
     ${cubemx_gen_dir}/Core/Inc
+
+     ${cubemx_gen_dir}/USB_DEVICE/App
+     ${cubemx_gen_dir}/USB_DEVICE/Target
+     ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+     ${cubemx_gen_dir}/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
 )
 target_sources(cubemx PRIVATE ${CUBEMX_Src})
 
