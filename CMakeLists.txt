@@ -71,6 +71,8 @@ target_compile_definitions(tinyusb_config INTERFACE CFG_TUSB_MCU=OPT_MCU_STM32F1
 target_compile_definitions(tinyusb_config INTERFACE STM32F103xB)
 
 add_subdirectory(lib/tinyusb/src)
+# target_sources(tinyusb PUBLIC
+# )
 
 
 # Link directories setup
@@ -83,6 +85,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     app/main.c
     app/interrupts.c
+
+    lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
+
 )
 
 # Add include paths
