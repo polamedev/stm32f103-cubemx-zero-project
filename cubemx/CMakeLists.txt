@@ -40,8 +40,8 @@ endfunction()
 if(USE_CUBEMX_CMSIS)
     message(STATUS "USE_CUBEMX_CMSIS")
     set(CMSIS_DIR ${cubemx_gen_dir}/Drivers/CMSIS)
-    # Подключаем файл по созданию таргета из библиотеки lame_cmakelib
-    include(${LAME_CMAKELIB}/target/lib_cmsis.cmake)
+    # Создаем таргет из библиотеки lame_cmakelib
+    add_lame_target(cmsis)
 endif()
 
 
@@ -52,8 +52,8 @@ if(USE_CUBEMX_ST_HAL_CONFIG)
     # Копируем файл в каталог сборки, чтобы отделить его от файла main.h, генерируемого cubeMX, нужно чтобы случайно не включить main.h
     configure_file(${cubemx_gen_dir}/Core/Inc/stm32f1xx_hal_conf.h ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config/stm32f1xx_hal_conf.h COPYONLY)
     set(ST_HAL_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/cubemx_st_hal_config)
-    # Подключаем файл по созданию таргета из библиотеки lame_cmakelib
-    include(${LAME_CMAKELIB}/target/lib_st_hal_config.cmake)
+    # Создаем таргет из библиотеки lame_cmakelib
+    add_lame_target(st_hal_config)
 endif()
 
 
@@ -61,7 +61,7 @@ endif()
 # Создание библиотеки hal
 
 if(USE_CUBEMX_ST_HAL)
-    message(STATUS "USE_CUBEMX_CMSIS")
+    message(STATUS "USE_CUBEMX_ST_HAL")
     # Установим директорию до исходников hal
     set(ST_HAL_DIR ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver)
 
@@ -71,7 +71,9 @@ if(USE_CUBEMX_ST_HAL)
     # Установим опцию использования спика файлов, требуемых для компиляции cubemx
     set(USE_CUBEMX_ST_HAL_SRC_LIST ON)
     # Подключаем файл по созданию таргета из библиотеки lame_cmakelib
-    include(${LAME_CMAKELIB}/target/lib_st_hal.cmake)
+
+    # Создаем таргет из библиотеки lame_cmakelib
+    add_lame_target(st_hal)
 endif()
 
 # --------------------------------------------------------------------------------------------------

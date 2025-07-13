@@ -10,3 +10,10 @@ macro(subdirlist result curdir)
   endforeach()
   set(${result} ${dirlist})
 endmacro()
+
+
+# Функция по созданию таргета - просто подключает файл в котором создается таргет 
+function(add_lame_target targetName)
+  message(STATUS "add_lame_target " ${targetName})
+  include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/target/include_${targetName}.cmake)
+endfunction(add_lame_target)
