@@ -66,11 +66,10 @@ if(USE_CUBEMX_ST_HAL)
     set(ST_HAL_DIR ${cubemx_gen_dir}/Drivers/STM32F1xx_HAL_Driver)
 
     # Установка семейства процессора в HAL
-    set(ST_MCU_NAME STM32F103xB)
+    set(ST_HAL_MCU_NAME STM32F103xB)
 
     # Выключим опцию использования полного списка файлов, список будем устанавливать сми
     set(ST_HAL_USE_FULL_SOURCES OFF)
-
 
     # Создаем таргет из библиотеки lame_cmakelib
     add_lame_target(st_hal)
@@ -79,7 +78,7 @@ if(USE_CUBEMX_ST_HAL)
     cubemx_get_st_hal_files(st_hal_src)
 
     # Установим этот список в качестве исходников
-    st_hall_sources("${st_hal_src}")
+    st_hal_sources("${st_hal_src}")
 endif()
 
 # --------------------------------------------------------------------------------------------------

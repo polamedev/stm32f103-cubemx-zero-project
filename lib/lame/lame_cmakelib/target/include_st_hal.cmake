@@ -1,6 +1,6 @@
 # Создание библиотеки hal
 
-set(ST_MCU_NAME STM32F103xB CACHE STRING "Тип процесса в HAL")
+set(ST_HAL_MCU_NAME STM32F103xB CACHE STRING "Тип процесса в HAL")
 
 # Установка пути до исходников, нужно чтобы можно было задать любое расположение с помощью переменных
 set(ST_HAL_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Путь до исходников ST_HAL")
@@ -8,7 +8,7 @@ set(ST_HAL_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Путь до исход�
 option(ST_HAL_USE_FULL_SOURCES "Использовать полный список файлов для сборки" ON)
 
 # Функция по установки файлов исходников учитывая ST_HAL_DIR
-function(st_hall_sources file_list)
+function(st_hal_sources file_list)
 
     list(TRANSFORM file_list PREPEND "${ST_HAL_DIR}/Src/")
     set(HAL_Src
@@ -27,7 +27,7 @@ add_library(st_hal STATIC)
 
 set(HAL_Defines_Syms
     USE_HAL_DRIVER
-    ${ST_MCU_NAME}
+    ${ST_HAL_MCU_NAME}
 )
 
 
