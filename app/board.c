@@ -1,9 +1,37 @@
+#include "board.h"
+
 #include <cubemx.h>
 #include <st_hal.h>
 
-#define BOARD_GET_UNIQUE_ID 1
+static void clockInit();
 
-size_t board_get_unique_id(uint8_t id[], size_t max_len);
+void board_init()
+{
+    MX_Init();
+    clockInit();
+}
+
+static void clockInit()
+{
+    /* Настройка тактирования usb */
+    RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+    PeriphClkInit.PeriphClockSelection     = RCC_PERIPHCLK_USB;
+    PeriphClkInit.UsbClockSelection        = RCC_USBCLKSOURCE_PLL_DIV1_5;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    /* Включение тактированяи usb */
+    __HAL_RCC_USB_CLK_ENABLE();
+
+    /**
+     *  Вывод usb для f103 не нужно ставить а альтернативную функцию
+     * это делается само при включении тактирования usb
+     */
+}
+
+#define BOARD_GET_UNIQUE_ID 1
 
 // Get USB Serial number string from unique ID if available. Return number of character.
 // Input is string descriptor from index 1 (index 0 is type + len)

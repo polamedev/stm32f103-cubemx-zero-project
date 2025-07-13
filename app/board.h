@@ -1,8 +1,8 @@
-#pragma once 
+#pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
+void   board_init();
 size_t board_get_unique_id(uint8_t id[], size_t max_len);
-
 size_t board_usb_get_serial(uint16_t desc_str1[], size_t max_chars);
