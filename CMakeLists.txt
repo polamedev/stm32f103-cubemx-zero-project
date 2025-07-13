@@ -86,6 +86,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     app/main.c
     app/interrupts.c
 
+    app/usb_descriptors.c
+
+
     lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
 
 )
@@ -94,6 +97,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     config
+
+    lib/tinyusb/hw
 )
 
 # Add project symbols (macros)

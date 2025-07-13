@@ -1,6 +1,7 @@
 #include <cubemx.h>
 
 #include <lame/event.h>
+#include <tusb.h>
 
 #include <stdbool.h>
 
@@ -16,4 +17,22 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if (GPIO_Pin == KEY_Pin) {
         LAME_event_set(&key_event);
     }
+}
+
+//--------------------------------------------------------------------+
+// Forward USB interrupt events to TinyUSB IRQ Handler
+//--------------------------------------------------------------------+
+void USB_HP_IRQHandler(void)
+{
+    tud_int_handler(0);
+}
+
+void USB_LP_IRQHandler(void)
+{
+    tud_int_handler(0);
+}
+
+void USBWakeUp_IRQHandler(void)
+{
+    tud_int_handler(0);
 }
