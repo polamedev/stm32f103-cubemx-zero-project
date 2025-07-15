@@ -1,5 +1,6 @@
 #include "init.h"
-#include "board.h"
+
+#include <board.h>
 
 #include <tusb.h>
 

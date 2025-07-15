@@ -88,15 +88,16 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     app/main.c
     app/init.c
-    app/interrupts.c
-    app/board.c
     app/usb_descriptors.c
+
+    drivers/bsp/interrupts.c
+    drivers/bsp/board.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
-    drivers
+    drivers/bsp
 )
 
 # Add project symbols (macros)

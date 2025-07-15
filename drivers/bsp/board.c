@@ -31,6 +31,16 @@ static void clockInit()
      */
 }
 
+void led_toggle()
+{
+    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+}
+
+void nop()
+{
+    __NOP();
+}
+
 #define BOARD_GET_UNIQUE_ID 1
 
 // Get USB Serial number string from unique ID if available. Return number of character.

@@ -1,7 +1,6 @@
 #include "init.h"
 
-#include <cubemx.h>
-#include <st_hal.h>
+#include <board.h>
 
 #include <ctype.h>
 #include <lame/event.h>
@@ -41,14 +40,14 @@ static void echo_serial_port(uint8_t itf, uint8_t buf[], uint32_t count)
 void tud_mount_cb(void)
 {
     // blink_interval_ms = BLINK_MOUNTED;
-    __NOP();
+    nop();
 }
 
 // Invoked when device is unmounted
 void tud_umount_cb(void)
 {
     // blink_interval_ms = BLINK_NOT_MOUNTED;
-    __NOP();
+    nop();
 }
 
 //--------------------------------------------------------------------+
@@ -107,7 +106,6 @@ int main()
     while (1) {
         if (LAME_event_take(&key_event)) {
             timeout = (timeout == LOW_SPEED_BLINK_TIMEOUT) ? HIGH_SPEED_BLINK_TIMEOUT : LOW_SPEED_BLINK_TIMEOUT;
-            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
         }
 
         tud_task(); // tinyusb device task
