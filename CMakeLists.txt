@@ -66,7 +66,7 @@ add_subdirectory(lib/lame/lame-c)
 
 
 add_library(tinyusb_config INTERFACE)
-target_include_directories(tinyusb_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/app)
+target_include_directories(tinyusb_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
 target_compile_definitions(tinyusb_config INTERFACE CFG_TUSB_MCU=OPT_MCU_STM32F1 STM32F103xB)
 
 
