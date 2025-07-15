@@ -61,6 +61,23 @@ add_subdirectory(cubemx)
 
 add_subdirectory(lib/lame/lame-c)
 
+# include(lib/tinyusb/hw/bsp/family_support.cmake)
+# family_add_tinyusb(${TARGET} OPT_MCU_STM32F1 OFF)
+
+
+add_library(tinyusb_config INTERFACE)
+target_include_directories(tinyusb_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
+target_compile_definitions(tinyusb_config INTERFACE CFG_TUSB_MCU=OPT_MCU_STM32F1 STM32F103xB)
+
+
+# Add TinyUSB target and port source
+add_subdirectory(lib/tinyusb/src)
+target_sources(tinyusb PUBLIC lib/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c)
+# Для порта требуется cmsis
+target_link_libraries(tinyusb PUBLIC cmsis)
+
+
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
@@ -70,7 +87,10 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     app/main.c
+    app/init.c
     app/interrupts.c
+    app/board.c
+    app/usb_descriptors.c
 )
 
 # Add include paths
@@ -89,6 +109,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
     lame-c
+    tinyusb
 )
 
 # Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
