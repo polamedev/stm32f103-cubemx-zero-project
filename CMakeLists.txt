@@ -60,6 +60,7 @@ add_subdirectory(drivers/cubemx)
 # add_subdirectory(lib/drivers/STM32F1xx_HAL_Driver)
 
 add_subdirectory(lib/lame/lame-c)
+add_subdirectory(lib/lame/lame-hw)
 
 # include(lib/tinyusb/hw/bsp/family_support.cmake)
 # family_add_tinyusb(${TARGET} OPT_MCU_STM32F1 OFF)
@@ -110,6 +111,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
     lame-c
+    lame-hw
     tinyusb
 )
 
