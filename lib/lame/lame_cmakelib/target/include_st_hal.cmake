@@ -34,7 +34,10 @@ set(HAL_Defines_Syms
 set(HAL_Include_Dirs
     ${ST_HAL_DIR}/Inc/Legacy
     ${ST_HAL_DIR}/Inc
+    ${CMAKE_CURRENT_LIST_DIR}/../include/st_hal
 )
+
+message(STATUS "HAL_INC ${HAL_Include_Dirs}")
 
 if(ST_HAL_USE_FULL_SOURCES)
     message(SEND_ERROR "ST_HAL_USE_FULL_SOURCES - пока не поддерживается")
