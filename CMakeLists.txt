@@ -46,7 +46,7 @@ message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 # set(USE_CUBEMX_CMSIS OFF) # Использовать CMSIS, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL_CONFIG OFF) # Использовать файл hal_conf, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL OFF) # Использовать файл hal_conf, сгенерированный CubeMX
-add_subdirectory(cubemx)
+add_subdirectory(hardware/cubemx)
 
 # При использовании USE_CUBEMX_CMSIS OFF необходимо самостоятельно подключить библиотеку CMSIS
 # add_subdirectory(lib/drivers/CMSIS)
@@ -113,7 +113,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 )
 
 # Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/cubemx/gen/STM32F103XX_FLASH.ld")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/hardware/cubemx/gen/STM32F103XX_FLASH.ld")
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--gc-sections")
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
