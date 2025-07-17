@@ -119,7 +119,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
     lame::soft
-    lame::drivers
+    lame::led
     lame::device
     tinyusb
 )
