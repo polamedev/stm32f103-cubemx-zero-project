@@ -87,9 +87,9 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    app/main.c
-    app/init.c
-    app/usb_descriptors.c
+    core/main.c
+    core/init.c
+    core/usb_descriptors.c
 
     bsp/interrupts.c
     bsp/board.c
