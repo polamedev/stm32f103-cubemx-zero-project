@@ -13,5 +13,6 @@ target_sources(lame-device
 )
 
 target_link_libraries(lame-device
+    lame::config
     lame::drivers
 )

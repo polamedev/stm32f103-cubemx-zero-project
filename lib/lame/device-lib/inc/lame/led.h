@@ -4,15 +4,10 @@
 
 #include <stdbool.h>
 
-typedef struct LAME_Led {
-    LAME_Pin *pin;
-    bool      activeLow;
-    unsigned  blinkCount;
-    unsigned  currentCount;
-} LAME_Led;
+typedef struct LAME_Led_Impl *LAME_Led;
 
-void LAME_Led_init(LAME_Led *led, LAME_Pin *pin, bool activeLow, unsigned blinkCount);
-void LAME_Led_task(LAME_Led *led);
-void LAME_Led_setActive(LAME_Led *led, bool activeLow);
-void LAME_Led_setBlinkCount(LAME_Led *led, unsigned blinkCount);
+LAME_Led LAME_Led_create(LAME_Pin *pin, bool activeLow, unsigned blinkCount);
+void     LAME_Led_task();
+void     LAME_Led_setActive(LAME_Led led, bool activeLow);
+void     LAME_Led_setBlinkCount(LAME_Led led, unsigned blinkCount);
 

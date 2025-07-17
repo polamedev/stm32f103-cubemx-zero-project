@@ -1,24 +1,44 @@
+#include <lame-config.h>
+
 #include <lame/led.h>
 
-void LAME_Led_init(LAME_Led *led, LAME_Pin *pin, bool activeLow, unsigned blinkCount)
+#include <stddef.h>
+
+typedef struct LAME_Led_Impl {
+    LAME_Pin *pin;
+    bool      activeLow;
+    unsigned  blinkCount;
+    unsigned  currentCount;
+} LAME_Led_Impl;
+
+static LAME_Led_Impl leds[LAME_LEDS_QTY];
+static size_t        freeLed = 0;
+
+LAME_Led LAME_Led_create(LAME_Pin *pin, bool activeLow, unsigned blinkCount)
 {
-    led->pin = pin;
-    led->activeLow = activeLow;
+    if (freeLed == LAME_LEDS_QTY) {
+        return NULL;
+    }
+    LAME_Led led = &leds[freeLed];
+    freeLed++;
+
+    led->pin        = pin;
+    led->activeLow  = activeLow;
     led->blinkCount = blinkCount;
 
     LAME_Led_setActive(led, activeLow);
+
+    return led;
 }
 
-void LAME_Led_task(LAME_Led *led)
+void LAME_Led_task()
 {
-    if (led->blinkCount == 0) {
-        return;
+    for (size_t i = 0; i < freeLed; ++i) {
     }
-
-    
+    return;
 }
 
-void LAME_Led_setActive(LAME_Led *led, bool active)
+void LAME_Led_setActive(LAME_Led led, bool active)
 {
     if (led->activeLow) {
         active = !active;
@@ -27,7 +47,7 @@ void LAME_Led_setActive(LAME_Led *led, bool active)
     LAME_Pin_setActive(led->pin, active);
 }
 
-void LAME_Led_setBlinkCount(LAME_Led *led, unsigned blinkCount)
+void LAME_Led_setBlinkCount(LAME_Led led, unsigned blinkCount)
 {
     led->blinkCount = blinkCount;
 }
