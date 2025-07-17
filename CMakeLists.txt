@@ -98,7 +98,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
-    bsp
+    ${CMAKE_HOME_DIRECTORY}
 )
 
 # Add project symbols (macros)
