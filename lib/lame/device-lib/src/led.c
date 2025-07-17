@@ -1,4 +1,4 @@
-#include "led.h"
+#include <lame/led.h>
 
 void LAME_Led_init(LAME_Led *led, LAME_Pin *pin, bool activeLow, unsigned blinkCount)
 {

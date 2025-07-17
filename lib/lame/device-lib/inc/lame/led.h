@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pin.h>
+#include <lame/pin.h>
 
 #include <stdbool.h>
 

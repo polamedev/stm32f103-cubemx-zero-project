@@ -38,7 +38,7 @@ enable_language(C ASM)
 add_executable(${CMAKE_PROJECT_NAME})
 
 # Подключить библиотеку lame_cmakelib
-add_subdirectory(lib/lame/lame_cmakelib)
+add_subdirectory(lib/lame/cmake-lib)
 message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 
 # Add STM32CubeMX generated sources
@@ -59,9 +59,9 @@ add_subdirectory(drivers/cubemx)
 # set(USE_CUBEMX_ST_HAL_SRC_LIST ON) # Установим опцию использования спика файлов, требуемых для компиляции cubemx
 # add_subdirectory(lib/drivers/STM32F1xx_HAL_Driver)
 
-add_subdirectory(lib/lame/lame-c)
-add_subdirectory(lib/lame/drivers)
-add_subdirectory(lib/lame/device)
+add_subdirectory(lib/lame/soft-lib)
+add_subdirectory(lib/lame/drivers-lib)
+add_subdirectory(lib/lame/device-lib)
 
 
 # include(lib/tinyusb/hw/bsp/family_support.cmake)
@@ -112,8 +112,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
-    lame-c
-    lame-drivers
+    lame::soft
+    lame::drivers
     tinyusb
 )
 
