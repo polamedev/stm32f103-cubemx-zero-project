@@ -2,7 +2,7 @@
 add_library(lame-hw STATIC)
 
 target_include_directories(lame-hw
-    INTERFACE
+    PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 
     PRIVATE
@@ -11,7 +11,8 @@ target_include_directories(lame-hw
 
 target_sources(lame-hw
     PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/drivers/led_driver.c
+    ${CMAKE_CURRENT_LIST_DIR}/device/led.c
+    ${CMAKE_CURRENT_LIST_DIR}/drivers/pin_driver.c
 )
 
 target_link_libraries(lame-hw
