@@ -49,7 +49,7 @@ message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 # set(USE_CUBEMX_CMSIS OFF) # Использовать CMSIS, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL_CONFIG OFF) # Использовать файл hal_conf, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL OFF) # Использовать файл hal_conf, сгенерированный CubeMX
-add_subdirectory(drivers/cubemx)
+add_subdirectory(bsp/cubemx)
 
 # При использовании USE_CUBEMX_CMSIS OFF необходимо самостоятельно подключить библиотеку CMSIS
 # add_subdirectory(lib/drivers/CMSIS)

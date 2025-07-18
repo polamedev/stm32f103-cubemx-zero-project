@@ -3,6 +3,8 @@
 #include <cubemx.h>
 #include <st_hal.h>
 
+#include <time.h>
+
 static void clockInit();
 
 void board_init()
@@ -13,6 +15,7 @@ void board_init()
 
 static void clockInit()
 {
+    // clock_t cl = clock();
     /* Настройка тактирования usb */
     RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
     PeriphClkInit.PeriphClockSelection     = RCC_PERIPHCLK_USB;
