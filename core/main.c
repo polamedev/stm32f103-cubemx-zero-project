@@ -7,6 +7,7 @@
 #include <tusb.h>
 
 #include <stdbool.h>
+#include <time.h>
 
 static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
 static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
@@ -110,5 +111,7 @@ int main()
 
         tud_task(); // tinyusb device task
         cdc_task();
+
+        volatile clock_t cl = clock();
     }
 }
