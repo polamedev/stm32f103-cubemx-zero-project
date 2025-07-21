@@ -1,5 +1,7 @@
 #include <SoftTimer.h>
 
+#include <lame_soft_config.h>
+
 bool LAME_SoftTimer_Occur(LAME_SoftTimer timer)
 {
     if (timer->state == LAME_SoftTimer_StateStop) {
@@ -10,7 +12,7 @@ bool LAME_SoftTimer_Occur(LAME_SoftTimer timer)
         return true;
     }
 
-    LAME_mSec currentTime = LAME_Get_mSec();
+    LAME_mSec currentTime = LAME_SoftTimer_Get_mSec();
 
     /* Таймер прошел. Переполнение должно само устраниться */
     if (currentTime - timer->startTime > timer->period) {

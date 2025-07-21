@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lame/mSec.h>
+#include <lame/types.h>
 
 #include <stdbool.h>
 

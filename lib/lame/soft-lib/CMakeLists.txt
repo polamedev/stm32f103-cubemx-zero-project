@@ -6,7 +6,7 @@ set(LAME_C_INC_DIR inc)
 set(LAME_C_SRC_DIR src)
 
 target_include_directories(lame-soft
-    INTERFACE
+    PUBLIC
     ${LAME_C_INC_DIR}
 
     PRIVATE
@@ -21,5 +21,5 @@ target_sources(lame-soft
 
 # TODO lame-soft не должна использовать lame-drivers
 target_link_libraries(lame-soft
-    lame-drivers
+    lame-soft-config
 )

@@ -5,8 +5,6 @@ add_library(lame::drivers ALIAS lame-drivers)
 target_include_directories(lame-drivers
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/inc
-
-
 )
 
 target_sources(lame-drivers
@@ -17,4 +15,5 @@ target_sources(lame-drivers
 
 target_link_libraries(lame-drivers
     st_hal
+    lame::soft
 )

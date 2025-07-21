@@ -65,8 +65,19 @@ add_subdirectory(bsp/cubemx)
 
 add_library(lame::config ALIAS config)
 
-add_subdirectory(lib/lame/soft-lib)
 add_subdirectory(lib/lame/drivers-lib)
+
+add_library(lame-soft-config INTERFACE)
+target_include_directories(lame-soft-config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
+target_link_libraries(lame-soft-config
+    INTERFACE
+    lame::drivers # Подключаем библиотеку, где определена функция получения времени в ms
+)
+
+add_subdirectory(lib/lame/soft-lib)
+# Для SoftTimer нужна функция получения времени в ms, ее определили lame-drivers
+
+
 add_subdirectory(lib/lame/device-lib)
 
 
