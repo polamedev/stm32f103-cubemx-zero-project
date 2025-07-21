@@ -20,6 +20,6 @@ typedef enum LAME_Pin_State {
     LAME_Pin_State_Low
 } LAME_Pin_State;
 
-typedef struct LAME_Pin_Impl *LAME_Pin;
+typedef struct LAME_Pin LAME_Pin;
 
-void LAME_Pin_setActive(LAME_Pin handle, bool state);
+void LAME_Pin_setActive(LAME_Pin *handle, bool state);

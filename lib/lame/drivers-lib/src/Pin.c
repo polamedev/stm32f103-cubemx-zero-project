@@ -17,14 +17,14 @@ static void enablePortClock(GPIO_TypeDef *GPIOx)
     }
 }
 
-void LAME_Pin_init(LAME_Pin handle, GPIO_InitTypeDef *initStruct)
+void LAME_Pin_init(LAME_Pin *handle, GPIO_InitTypeDef *initStruct)
 {
     enablePortClock(handle->GPIOx);
 
     HAL_GPIO_Init(handle->GPIOx, initStruct);
 }
 
-void LAME_Pin_setActive(LAME_Pin handle, bool state)
+void LAME_Pin_setActive(LAME_Pin *handle, bool state)
 {
     if (state) {
         HAL_GPIO_WritePin(handle->GPIOx, handle->GPIO_Pin, GPIO_PIN_SET);

@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 typedef struct LAME_Led_Impl {
-    LAME_Pin pin;
+    LAME_Pin *pin;
     bool      activeLow;
     unsigned  blinkCount;
     unsigned  currentCount;
@@ -14,7 +14,7 @@ typedef struct LAME_Led_Impl {
 static LAME_Led_Impl leds[LAME_LEDS_QTY];
 static size_t        freeLed = 0;
 
-LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
+LAME_Led LAME_Led_create(LAME_Pin *pin, bool activeLow, unsigned blinkCount)
 {
     if (freeLed == LAME_LEDS_QTY) {
         return NULL;
