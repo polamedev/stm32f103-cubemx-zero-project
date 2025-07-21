@@ -3,7 +3,7 @@
 #include <bsp/board.h>
 
 #include <ctype.h>
-#include <lame/event.h>
+#include <lame/Event.h>
 #include <tusb.h>
 
 #include <stdbool.h>
@@ -112,6 +112,6 @@ int main()
         tud_task(); // tinyusb device task
         cdc_task();
 
-        volatile clock_t cl = clock();
+        // volatile clock_t cl = clock();
     }
 }

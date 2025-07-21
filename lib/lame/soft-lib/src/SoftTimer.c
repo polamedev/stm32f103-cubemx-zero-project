@@ -1,5 +1,4 @@
-#include "SoftTimer.h"
-#include <lame/SoftTimer.h>
+#include <SoftTimer.h>
 
 bool LAME_SoftTimer_Occur(LAME_SoftTimer timer)
 {
@@ -27,7 +26,7 @@ bool LAME_SoftTimer_Occur(LAME_SoftTimer timer)
     return false;
 }
 
-void LAME_SoftTimer_Init(LAME_SoftTimer timer, LAME_mSec period, LAME_SoftTimer_Mode mode)
+void LAME_SoftTimer_Init(LAME_SoftTimer timer, LAME_SoftTimer_Mode mode, LAME_mSec period)
 {
     timer->period = period;
     timer->mode   = mode;

@@ -1,6 +1,6 @@
 #include <cubemx.h>
 
-#include <lame/event.h>
+#include <lame/Event.h>
 #include <tusb.h>
 
 #include <stdbool.h>

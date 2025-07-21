@@ -1,4 +1,4 @@
-#include <event.h>
+#include <Event.h>
 
 void LAME_event_init(LAME_event *event)
 {

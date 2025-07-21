@@ -13,5 +13,5 @@ target_link_libraries(lame-device
 # LED
 add_library(led STATIC)
 add_library(lame::led ALIAS led)
-target_sources(led PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/led.c)
+target_sources(led PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/Led.c)
 target_link_libraries(led PRIVATE lame::device)

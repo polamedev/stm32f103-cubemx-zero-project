@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lame/pin.h>
+#include <lame/Pin.h>
 
 #include <st_hal.h>
 

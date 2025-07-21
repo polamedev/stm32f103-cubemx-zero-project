@@ -1,6 +1,6 @@
 #include <lame-config.h>
 
-#include <lame/led.h>
+#include <lame/Led.h>
 
 #include <stddef.h>
 

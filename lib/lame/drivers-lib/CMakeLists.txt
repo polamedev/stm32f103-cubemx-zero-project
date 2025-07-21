@@ -11,7 +11,7 @@ target_include_directories(lame-drivers
 
 target_sources(lame-drivers
     PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/src/pin_driver.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/Pin.c
     ${CMAKE_CURRENT_LIST_DIR}/src/mSec.c
 )
 

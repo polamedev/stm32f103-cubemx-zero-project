@@ -15,5 +15,11 @@ target_include_directories(lame-soft
 
 target_sources(lame-soft
     PRIVATE
-    ${LAME_C_SRC_DIR}/event.c
+    ${LAME_C_SRC_DIR}/Event.c
+    ${LAME_C_SRC_DIR}/SoftTimer.c
+)
+
+# TODO lame-soft не должна использовать lame-drivers
+target_link_libraries(lame-soft
+    lame-drivers
 )
