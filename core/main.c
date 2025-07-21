@@ -98,14 +98,14 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
 
 int main()
 {
-    LAME_event_init(&key_event);
+    LAME_Event_Init(&key_event);
 
     init();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
     while (1) {
-        if (LAME_event_take(&key_event)) {
+        if (LAME_Event_Take(&key_event)) {
             timeout = (timeout == LOW_SPEED_BLINK_TIMEOUT) ? HIGH_SPEED_BLINK_TIMEOUT : LOW_SPEED_BLINK_TIMEOUT;
         }
 
