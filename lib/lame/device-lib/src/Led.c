@@ -18,8 +18,7 @@ typedef struct LAME_Led_Impl {
 static LAME_Led_Impl leds[LAME_LEDS_QTY];
 static size_t        freeLed = 0;
 
-const LAME_mSec blinkTime = 200;
-const LAME_mSec offTime   = 500;
+const LAME_mSec blinkTime = 100;
 
 static void LAME_Led_UnitTask(LAME_Led led)
 {
@@ -27,7 +26,22 @@ static void LAME_Led_UnitTask(LAME_Led led)
         return;
     }
 
-    LAME_Pin_Toggle(led->pin);
+    if (led->currentCount % 2 == 0) {
+        LAME_Led_setActive(led, true);
+    }
+    else {
+        LAME_Led_setActive(led, false);
+    }
+
+    led->currentCount++;
+
+    if (led->currentCount >= led->blinkCount) {
+        led->currentCount = 0;
+        LAME_SoftTimer_SetPeriod(&led->timer, blinkTime * 5);
+    }
+    else {
+        LAME_SoftTimer_SetPeriod(&led->timer, blinkTime);
+    }
 }
 
 LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
@@ -38,9 +52,10 @@ LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
     LAME_Led led = &leds[freeLed];
     freeLed++;
 
-    led->pin        = pin;
-    led->activeLow  = activeLow;
-    led->blinkCount = blinkCount;
+    led->pin          = pin;
+    led->activeLow    = activeLow;
+    led->blinkCount   = blinkCount * 2;
+    led->currentCount = 0;
 
     LAME_Led_setActive(led, activeLow);
 
