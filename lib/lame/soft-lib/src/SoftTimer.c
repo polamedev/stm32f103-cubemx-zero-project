@@ -17,7 +17,7 @@ bool LAME_SoftTimer_Occur(LAME_SoftTimer *timer)
     /* Таймер прошел. Переполнение должно само устраниться */
     if (currentTime - timer->startTime > timer->period) {
         if (timer->mode == LAME_SoftTimer_ModePeriodic) {
-            timer->startTime = timer->period;
+            timer->startTime += timer->period;
         }
         else {
             timer->state = LAME_SoftTimer_StateElapsedComplete;

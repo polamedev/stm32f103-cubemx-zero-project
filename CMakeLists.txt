@@ -71,7 +71,7 @@ add_library(lame-soft-config INTERFACE)
 target_include_directories(lame-soft-config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
 target_link_libraries(lame-soft-config
     INTERFACE
-    lame::drivers # Подключаем библиотеку, где определена функция получения времени в ms
+    lame-drivers # Подключаем библиотеку, где определена функция получения времени в ms
 )
 
 add_subdirectory(lib/lame/soft-lib)
@@ -131,7 +131,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     # st_hal
     lame::soft
     lame::led
-    lame::device
     tinyusb
 )
 

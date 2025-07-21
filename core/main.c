@@ -113,5 +113,7 @@ int main()
         cdc_task();
 
         // volatile clock_t cl = clock();
+
+        LAME_Led_task();
     }
 }

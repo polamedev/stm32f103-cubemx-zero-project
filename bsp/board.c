@@ -3,14 +3,19 @@
 #include <cubemx.h>
 #include <st_hal.h>
 
-#include <time.h>
+#include <lame/impl/Pin_Impl.h>
+#include <lame/Led.h>
+
+LAME_Led led;
 
 static void clockInit();
+static void pinInit();
 
 void board_init()
 {
     MX_Init();
     clockInit();
+    pinInit();
 }
 
 static void clockInit()
@@ -31,6 +36,26 @@ static void clockInit()
      *  Вывод usb для f103 не нужно ставить а альтернативную функцию
      * это делается само при включении тактирования usb
      */
+}
+
+void pinInit()
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    {
+        GPIO_InitStruct.Pin   = LED_Pin;
+        GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+        GPIO_InitStruct.Pull  = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+
+        static struct LAME_Pin_Impl led_impl;
+        led_impl.GPIOx = LED_GPIO_Port;
+        led_impl.GPIO_Pin = LED_Pin;
+        LAME_Pin led_pin = LAME_Pin_init(&led_impl, &GPIO_InitStruct);
+
+        led = LAME_Led_create(led_pin, false, 3);
+    }
+
+    // HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 }
 
 void led_toggle()

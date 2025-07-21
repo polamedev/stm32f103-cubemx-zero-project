@@ -21,5 +21,6 @@ target_sources(lame-soft
 
 # TODO lame-soft не должна использовать lame-drivers
 target_link_libraries(lame-soft
+    PRIVATE
     lame-soft-config
 )

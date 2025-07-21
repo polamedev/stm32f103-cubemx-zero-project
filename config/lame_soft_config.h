@@ -14,6 +14,6 @@
  * @brief  Функция получения времени в миллисекундах, определена в lame::drivers
  * @return 
  */
-inline LAME_mSec LAME_SoftTimer_Get_mSec() {
+LAME_mSec LAME_SoftTimer_Get_mSec() {
     return LAME_Get_mSec();
 }

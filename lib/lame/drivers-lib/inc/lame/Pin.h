@@ -22,4 +22,7 @@ typedef enum LAME_Pin_State {
 
 typedef struct LAME_Pin_Impl *LAME_Pin;
 
-void LAME_Pin_setActive(LAME_Pin handle, bool state);
+void LAME_Pin_SetActive(LAME_Pin handle, bool state);
+bool LAME_Pin_GetActive(const LAME_Pin handle);
+void LAME_Pin_Toggle(LAME_Pin handle);
+

@@ -3,6 +3,8 @@ add_library(lame-drivers STATIC)
 add_library(lame::drivers ALIAS lame-drivers)
 
 target_include_directories(lame-drivers
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/inc/lame
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/inc
 )

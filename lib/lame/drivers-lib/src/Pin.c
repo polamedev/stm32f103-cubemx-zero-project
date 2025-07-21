@@ -1,4 +1,5 @@
 #include <lame/impl/Pin_Impl.h>
+#include <Pin.h>
 
 static void enablePortClock(GPIO_TypeDef *GPIOx)
 {
@@ -26,7 +27,7 @@ LAME_Pin LAME_Pin_init(struct LAME_Pin_Impl *handle, GPIO_InitTypeDef *initStruc
     return handle;
 }
 
-void LAME_Pin_setActive(LAME_Pin handle, bool state)
+void LAME_Pin_SetActive(LAME_Pin handle, bool state)
 {
     if (state) {
         HAL_GPIO_WritePin(handle->GPIOx, handle->GPIO_Pin, GPIO_PIN_SET);
@@ -34,4 +35,14 @@ void LAME_Pin_setActive(LAME_Pin handle, bool state)
     else {
         HAL_GPIO_WritePin(handle->GPIOx, handle->GPIO_Pin, GPIO_PIN_RESET);
     }
+}
+
+bool LAME_Pin_GetActive(const LAME_Pin handle)
+{
+    return HAL_GPIO_ReadPin(handle->GPIOx, handle->GPIO_Pin) == GPIO_PIN_SET;
+}
+
+void LAME_Pin_Toggle(LAME_Pin handle)
+{
+    HAL_GPIO_TogglePin(handle->GPIOx, handle->GPIO_Pin);
 }
