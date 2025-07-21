@@ -52,7 +52,7 @@ void pinInit()
         led_impl.GPIO_Pin = LED_Pin;
         LAME_Pin led_pin = LAME_Pin_init(&led_impl, &GPIO_InitStruct);
 
-        led = LAME_Led_create(led_pin, false, 3);
+        led = LAME_Led_Create(led_pin, false, 3);
     }
 
     // HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);

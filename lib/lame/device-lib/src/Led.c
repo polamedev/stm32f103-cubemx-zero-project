@@ -27,10 +27,10 @@ static void LAME_Led_UnitTask(LAME_Led led)
     }
 
     if (led->currentCount % 2 == 0) {
-        LAME_Led_setActive(led, true);
+        LAME_Led_SetActive(led, true);
     }
     else {
-        LAME_Led_setActive(led, false);
+        LAME_Led_SetActive(led, false);
     }
 
     led->currentCount++;
@@ -44,7 +44,7 @@ static void LAME_Led_UnitTask(LAME_Led led)
     }
 }
 
-LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
+LAME_Led LAME_Led_Create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
 {
     if (freeLed == LAME_LEDS_QTY) {
         return NULL;
@@ -57,7 +57,7 @@ LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
     led->blinkCount   = blinkCount * 2;
     led->currentCount = 0;
 
-    LAME_Led_setActive(led, activeLow);
+    LAME_Led_SetActive(led, activeLow);
 
     LAME_SoftTimer_Init(&led->timer, LAME_SoftTimer_ModePeriodic, blinkTime);
     LAME_SoftTimer_Start(&led->timer);
@@ -65,14 +65,14 @@ LAME_Led LAME_Led_create(LAME_Pin pin, bool activeLow, unsigned blinkCount)
     return led;
 }
 
-void LAME_Led_task()
+void LAME_Led_Task()
 {
     for (size_t i = 0; i < freeLed; ++i) {
         LAME_Led_UnitTask(&leds[i]);
     }
 }
 
-void LAME_Led_setActive(LAME_Led led, bool active)
+void LAME_Led_SetActive(LAME_Led led, bool active)
 {
     if (led->activeLow) {
         active = !active;
@@ -90,7 +90,7 @@ bool LAME_Led_GetActive(const LAME_Led led)
     return active;
 }
 
-void LAME_Led_setBlinkCount(LAME_Led led, unsigned blinkCount)
+void LAME_Led_SetBlinkCount(LAME_Led led, unsigned blinkCount)
 {
     led->blinkCount = blinkCount;
 }
