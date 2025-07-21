@@ -4,9 +4,9 @@
 
 #include <st_hal.h>
 
-typedef struct LAME_Pin {
-    GPIO_TypeDef         *GPIOx;
-    uint16_t              GPIO_Pin;
-} LAME_Pin;
+typedef struct LAME_Pin_Impl {
+    GPIO_TypeDef *GPIOx;
+    uint16_t      GPIO_Pin;
+} LAME_Pin_Impl;
 
-void LAME_Pin_init(LAME_Pin *handle, GPIO_InitTypeDef *initStruct);
+void LAME_Pin_init(LAME_Pin handle, GPIO_InitTypeDef *initStruct);

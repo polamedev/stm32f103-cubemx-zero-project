@@ -2,10 +2,12 @@
 
 #include <stdbool.h>
 
-typedef bool LAME_event;
+typedef bool LAME_Event_Impl;
 
-void LAME_event_init(LAME_event *event);
-bool LAME_event_take(LAME_event *event);
-bool LAME_event_check(const LAME_event *event);
-void LAME_event_set(LAME_event *event);
-void LAME_event_clear(LAME_event *event);
+typedef LAME_Event_Impl *LAME_Event;
+
+void LAME_event_init(LAME_Event event);
+bool LAME_event_take(LAME_Event event);
+bool LAME_event_check(const LAME_Event event);
+void LAME_event_set(LAME_Event event);
+void LAME_event_clear(LAME_Event event);

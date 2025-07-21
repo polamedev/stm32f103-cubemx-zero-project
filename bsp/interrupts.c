@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 
-extern LAME_event key_event;
+extern LAME_Event_Impl key_event;
 
 /**
  * @brief  EXTI line detection callbacks.

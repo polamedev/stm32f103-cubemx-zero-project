@@ -12,7 +12,7 @@
 static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
 static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
 
-LAME_event key_event;
+LAME_Event_Impl key_event;
 
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case

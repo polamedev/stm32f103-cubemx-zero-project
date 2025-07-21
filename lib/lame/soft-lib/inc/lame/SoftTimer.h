@@ -15,14 +15,14 @@ typedef enum {
     LAME_SoftTimer_StateElapsedComplete, // Таймер завершен в режим elapsed
 } LAME_SoftTimer_State;
 
-typedef struct LAME_SoftTimer_Object {
+typedef struct LAME_SoftTimer_Impl {
     LAME_mSec            startTime; // Начальное время старта
     LAME_mSec            period;    // Период истечения таймера
     LAME_SoftTimer_Mode  mode;
     LAME_SoftTimer_State state;
-} LAME_SoftTimer_Object;
+} LAME_SoftTimer_Impl;
 
-typedef LAME_SoftTimer_Object *LAME_SoftTimer;
+typedef LAME_SoftTimer_Impl *LAME_SoftTimer;
 
 /**
  * @brief  Проверить срабатывание таймера
