@@ -63,7 +63,7 @@ add_subdirectory(bsp/cubemx)
 # add_subdirectory(lib/drivers/STM32F1xx_HAL_Driver)
 
 
-add_library(lame::config ALIAS config)
+add_library(lame-config ALIAS config)
 
 add_subdirectory(lib/lame/drivers-lib)
 

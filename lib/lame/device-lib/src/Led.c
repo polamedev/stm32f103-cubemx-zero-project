@@ -1,4 +1,4 @@
-#include <lame-config.h>
+#include <lame_config.h>
 
 #include <lame/Led.h>
 

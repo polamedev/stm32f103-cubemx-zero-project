@@ -6,7 +6,7 @@ target_include_directories(lame-device INTERFACE ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 target_link_libraries(lame-device
     INTERFACE
-    lame::config
+    lame-config
     lame::drivers
 )
 
