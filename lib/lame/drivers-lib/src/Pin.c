@@ -1,4 +1,4 @@
-#include <lame/drivers/Pin_Driver.h>
+#include <lame/impl/Pin_Impl.h>
 
 static void enablePortClock(GPIO_TypeDef *GPIOx)
 {
@@ -17,14 +17,16 @@ static void enablePortClock(GPIO_TypeDef *GPIOx)
     }
 }
 
-void LAME_Pin_init(LAME_Pin *handle, GPIO_InitTypeDef *initStruct)
+LAME_Pin LAME_Pin_init(struct LAME_Pin_Impl *handle, GPIO_InitTypeDef *initStruct)
 {
     enablePortClock(handle->GPIOx);
 
     HAL_GPIO_Init(handle->GPIOx, initStruct);
+
+    return handle;
 }
 
-void LAME_Pin_setActive(LAME_Pin *handle, bool state)
+void LAME_Pin_setActive(LAME_Pin handle, bool state)
 {
     if (state) {
         HAL_GPIO_WritePin(handle->GPIOx, handle->GPIO_Pin, GPIO_PIN_SET);
