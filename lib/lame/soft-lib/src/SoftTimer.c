@@ -15,9 +15,18 @@ bool LAME_SoftTimer_Occur(LAME_SoftTimer *timer)
     LAME_mSec currentTime = LAME_SoftTimer_Get_mSec();
 
     /* Таймер прошел. Переполнение должно само устраниться */
-    if (currentTime - timer->startTime > timer->period) {
+    LAME_mSec dt = currentTime - timer->startTime;
+    if (dt > timer->period) {
         if (timer->mode == LAME_SoftTimer_ModePeriodic) {
-            timer->startTime += timer->period;
+            timer->startTime = currentTime;
+        }
+        else if (timer->mode == LAME_SoftTimer_ModeHardPeriodic) {
+            if (dt > timer->period * 2) {
+                timer->startTime = currentTime;
+            }
+            else {
+                timer->startTime += timer->period;
+            }
         }
         else {
             timer->state = LAME_SoftTimer_StateElapsedComplete;

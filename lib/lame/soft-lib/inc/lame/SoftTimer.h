@@ -5,8 +5,9 @@
 #include <stdbool.h>
 
 typedef enum {
-    LAME_SoftTimer_ModePeriodic, // Режим периодического срабатывания
-    LAME_SoftTimer_ModeElapsed,  // Режим срабатывания один раз
+    LAME_SoftTimer_ModePeriodic,     // Режим периодического срабатывания
+    LAME_SoftTimer_ModeHardPeriodic, // Режим жесткого периодического срабатывания, срабатывания будут происходить независимо от проверки LAME_SoftTimer_Occur
+    LAME_SoftTimer_ModeElapsed,      // Режим срабатывания один раз
 } LAME_SoftTimer_Mode;
 
 typedef enum {
