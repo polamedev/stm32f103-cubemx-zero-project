@@ -124,6 +124,8 @@ static void cdc_task(void)
                 tud_cdc_n_write_str(usb_descr, str);
             }
 
+            tud_cdc_n_write_char(usb_descr, '\n');
+
             // echo_serial_port(usb_descr, buf, count);
 
             tud_cdc_n_write_flush(usb_descr);
@@ -160,6 +162,9 @@ int main()
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
+    LAME_SoftTimer_Init(&txPeriodTimer, LAME_SoftTimer_ModePeriodic, 1000);
+    LAME_SoftTimer_Start(&txPeriodTimer);
+
     while (1) {
         if (LAME_Event_Take(&key_event)) {
             timeout = (timeout == LOW_SPEED_BLINK_TIMEOUT) ? HIGH_SPEED_BLINK_TIMEOUT : LOW_SPEED_BLINK_TIMEOUT;
@@ -171,5 +176,11 @@ int main()
         // volatile clock_t cl = clock();
 
         LAME_Led_Task();
+
+        if(LAME_SoftTimer_Occur(&txPeriodTimer)) {
+            const char *tx = "55\n";
+            tud_cdc_n_write_str(usb_descr, tx);
+            tud_cdc_n_write_flush(usb_descr);
+        }
     }
 }
