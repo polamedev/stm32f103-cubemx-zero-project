@@ -22,6 +22,8 @@ typedef struct {
     int      argumentCount;
 } ArgumentParser;
 
+bool receivedCommand = false;
+
 static const int usb_descr = 0;
 
 static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
@@ -33,13 +35,25 @@ ArgumentParser argumentParser;
 
 LAME_SoftTimer txPeriodTimer;
 
-static void parseArgumentString(ArgumentParser *parser, const uint8_t *str, int size)
+struct {
+    bool countOutput;
+} appSettings;
+
+static void debugOut(char *str)
+{
+    tud_cdc_n_write_str(usb_descr, str);
+    tud_cdc_n_write_char(usb_descr, '\n');
+
+    tud_cdc_n_write_flush(usb_descr);
+}
+
+static bool parseArgumentString(ArgumentParser *parser, const uint8_t *str, int size)
 {
     memset(parser->arguments, 0, sizeof(Argument) * MAX_ARGUMENTS_COUNT);
     parser->argumentCount = 0;
 
     if (size >= MAX_COMMAND_SIZE) {
-        return;
+        return false;
     }
 
     char buf[MAX_COMMAND_SIZE];
@@ -59,29 +73,31 @@ static void parseArgumentString(ArgumentParser *parser, const uint8_t *str, int 
     }
 
     parser->argumentCount = argCount;
+
+    return argCount > 0 ? true : false;
 }
 
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case
-static void echo_serial_port(uint8_t itf, uint8_t buf[], uint32_t count)
-{
-    const uint8_t case_diff = 'a' - 'A';
+// static void echo_serial_port(uint8_t itf, uint8_t buf[], uint32_t count)
+// {
+//     const uint8_t case_diff = 'a' - 'A';
 
-    for (uint32_t i = 0; i < count; i++) {
-        if (itf == 0) {
-            // echo back 1st port as lower case
-            if (isupper(buf[i]))
-                buf[i] += case_diff;
-        }
-        else {
-            // echo back 2nd port as upper case
-            if (islower(buf[i]))
-                buf[i] -= case_diff;
-        }
+//     for (uint32_t i = 0; i < count; i++) {
+//         if (itf == 0) {
+//             // echo back 1st port as lower case
+//             if (isupper(buf[i]))
+//                 buf[i] += case_diff;
+//         }
+//         else {
+//             // echo back 2nd port as upper case
+//             if (islower(buf[i]))
+//                 buf[i] -= case_diff;
+//         }
 
-        tud_cdc_n_write_char(itf, buf[i]);
-    }
-}
+//         tud_cdc_n_write_char(itf, buf[i]);
+//     }
+// }
 
 // Invoked when device is mounted
 void tud_mount_cb(void)
@@ -113,7 +129,11 @@ static void cdc_task(void)
 
             // echo back to both serial ports
 
-            parseArgumentString(&argumentParser, buf, count);
+            if (!parseArgumentString(&argumentParser, buf, count)) {
+                return;
+            }
+
+            receivedCommand = true;
 
             char str[30];
             snprintf(str, sizeof(str), "s %lu: ", count);
@@ -154,11 +174,52 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
     }
 }
 
+static void initAppSetting()
+{
+    appSettings.countOutput = true;
+}
+
+
+static void processCommandTask()
+{
+    if (!receivedCommand) {
+        return;
+    }
+    receivedCommand = false;
+
+    if (strcmp(argumentParser.arguments[0], "stop") == 0) {
+        appSettings.countOutput = false;
+        debugOut("WAS STOP");
+    }
+    if (strcmp(argumentParser.arguments[0], "start") == 0) {
+        appSettings.countOutput = true;
+        debugOut("WAS STOP");
+    }
+}
+
+static void countOutputTask()
+{
+    if (!appSettings.countOutput) {
+        LAME_SoftTimer_Stop(&txPeriodTimer);
+        return;
+    }
+    else {
+        LAME_SoftTimer_Start(&txPeriodTimer);
+    }
+
+    if (LAME_SoftTimer_Occur(&txPeriodTimer)) {
+        const char *tx = "55\n";
+        tud_cdc_n_write_str(usb_descr, tx);
+        tud_cdc_n_write_flush(usb_descr);
+    }
+}
+
 int main()
 {
     LAME_Event_Init(&key_event);
 
     init();
+    initAppSetting();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
@@ -174,13 +235,8 @@ int main()
         cdc_task();
 
         // volatile clock_t cl = clock();
-
+        processCommandTask();
+        countOutputTask();
         LAME_Led_Task();
-
-        if(LAME_SoftTimer_Occur(&txPeriodTimer)) {
-            const char *tx = "55\n";
-            tud_cdc_n_write_str(usb_descr, tx);
-            tud_cdc_n_write_flush(usb_descr);
-        }
     }
 }
