@@ -56,7 +56,11 @@ LAME_SoftTimer_State LAME_SoftTimer_GetState(const LAME_SoftTimer *timer)
 
 void LAME_SoftTimer_Start(LAME_SoftTimer *timer)
 {
+    if (timer->state == LAME_SoftTimer_StateRun) {
+        return;
+    }
     timer->state = LAME_SoftTimer_StateRun;
+    timer->startTime = LAME_SoftTimer_Get_mSec();
 }
 
 void LAME_SoftTimer_Stop(LAME_SoftTimer *timer)
