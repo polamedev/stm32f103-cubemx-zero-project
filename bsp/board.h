@@ -1,7 +1,11 @@
 #pragma once
 
+#include <lame/Led.h>
+
 #include <stddef.h>
 #include <stdint.h>
+
+extern LAME_Led led;
 
 void   board_init();
 

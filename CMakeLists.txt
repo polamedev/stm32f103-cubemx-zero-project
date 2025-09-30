@@ -37,8 +37,11 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+add_library(config INTERFACE)
+target_include_directories(config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
+
 # Подключить библиотеку lame_cmakelib
-add_subdirectory(lib/lame/lame_cmakelib)
+add_subdirectory(lib/lame/cmake-lib)
 message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 
 # Add STM32CubeMX generated sources
@@ -46,7 +49,7 @@ message(STATUS "LAME_CMAKELIB" ${LAME_CMAKELIB})
 # set(USE_CUBEMX_CMSIS OFF) # Использовать CMSIS, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL_CONFIG OFF) # Использовать файл hal_conf, сгенерированный CubeMX
 # set(USE_CUBEMX_ST_HAL OFF) # Использовать файл hal_conf, сгенерированный CubeMX
-add_subdirectory(drivers/cubemx)
+add_subdirectory(bsp/cubemx)
 
 # При использовании USE_CUBEMX_CMSIS OFF необходимо самостоятельно подключить библиотеку CMSIS
 # add_subdirectory(lib/drivers/CMSIS)
@@ -59,7 +62,24 @@ add_subdirectory(drivers/cubemx)
 # set(USE_CUBEMX_ST_HAL_SRC_LIST ON) # Установим опцию использования спика файлов, требуемых для компиляции cubemx
 # add_subdirectory(lib/drivers/STM32F1xx_HAL_Driver)
 
-add_subdirectory(lib/lame/lame-c)
+
+add_library(lame-config ALIAS config)
+
+add_subdirectory(lib/lame/drivers-lib)
+
+add_library(lame-soft-config INTERFACE)
+target_include_directories(lame-soft-config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config)
+target_link_libraries(lame-soft-config
+    INTERFACE
+    lame-drivers # Подключаем библиотеку, где определена функция получения времени в ms
+)
+
+add_subdirectory(lib/lame/soft-lib)
+# Для SoftTimer нужна функция получения времени в ms, ее определили lame-drivers
+
+
+add_subdirectory(lib/lame/device-lib)
+
 
 # include(lib/tinyusb/hw/bsp/family_support.cmake)
 # family_add_tinyusb(${TARGET} OPT_MCU_STM32F1 OFF)
@@ -86,18 +106,18 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    app/main.c
-    app/init.c
-    app/usb_descriptors.c
+    core/main.c
+    core/init.c
+    core/usb_descriptors.c
 
-    drivers/bsp/interrupts.c
-    drivers/bsp/board.c
+    bsp/interrupts.c
+    bsp/board.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
-    drivers/bsp
+    ${CMAKE_HOME_DIRECTORY}
 )
 
 # Add project symbols (macros)
@@ -109,12 +129,13 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     cubemx
     # st_hal
-    lame-c
+    lame::soft
+    lame::led
     tinyusb
 )
 
 # Флаги линковки могут быть специфичны для компиляторы, наверное, стоит вынести отдельный файл
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/drivers/cubemx/gen/STM32F103XX_FLASH.ld")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-T${CMAKE_SOURCE_DIR}/bsp/cubemx/gen/STM32F103XX_FLASH.ld")
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--gc-sections")
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)

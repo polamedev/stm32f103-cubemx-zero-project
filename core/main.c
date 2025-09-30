@@ -1,17 +1,18 @@
 #include "init.h"
 
-#include <board.h>
+#include <bsp/board.h>
 
 #include <ctype.h>
-#include <lame/event.h>
+#include <lame/Event.h>
 #include <tusb.h>
 
 #include <stdbool.h>
+#include <time.h>
 
 static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
 static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
 
-LAME_event key_event;
+LAME_Event key_event;
 
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case
@@ -97,18 +98,22 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
 
 int main()
 {
-    LAME_event_init(&key_event);
+    LAME_Event_Init(&key_event);
 
     init();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
     while (1) {
-        if (LAME_event_take(&key_event)) {
+        if (LAME_Event_Take(&key_event)) {
             timeout = (timeout == LOW_SPEED_BLINK_TIMEOUT) ? HIGH_SPEED_BLINK_TIMEOUT : LOW_SPEED_BLINK_TIMEOUT;
         }
 
         tud_task(); // tinyusb device task
         cdc_task();
+
+        // volatile clock_t cl = clock();
+
+        LAME_Led_Task();
     }
 }

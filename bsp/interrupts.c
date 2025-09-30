@@ -1,11 +1,11 @@
 #include <cubemx.h>
 
-#include <lame/event.h>
+#include <lame/Event.h>
 #include <tusb.h>
 
 #include <stdbool.h>
 
-extern LAME_event key_event;
+extern LAME_Event key_event;
 
 /**
  * @brief  EXTI line detection callbacks.
@@ -15,7 +15,7 @@ extern LAME_event key_event;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == KEY_Pin) {
-        LAME_event_set(&key_event);
+        LAME_Event_Set(&key_event);
     }
 }
 

@@ -23,7 +23,7 @@
  *
  */
 
-#include <board.h>
+#include <bsp/board.h>
 
 #include <tusb.h>
 
