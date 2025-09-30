@@ -4,15 +4,62 @@
 
 #include <ctype.h>
 #include <lame/Event.h>
+#include <lame/SoftTimer.h>
 #include <tusb.h>
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <time.h>
+
+#define MAX_COMMAND_SIZE    64
+#define MAX_ARGUMENT_SIZE   12
+#define MAX_ARGUMENTS_COUNT 6
+
+typedef char Argument[MAX_ARGUMENT_SIZE];
+
+typedef struct {
+    Argument arguments[MAX_ARGUMENTS_COUNT];
+    int      argumentCount;
+} ArgumentParser;
+
+static const int usb_descr = 0;
 
 static const uint32_t LOW_SPEED_BLINK_TIMEOUT  = 500;
 static const uint32_t HIGH_SPEED_BLINK_TIMEOUT = LOW_SPEED_BLINK_TIMEOUT / 4;
 
 LAME_Event key_event;
+
+ArgumentParser argumentParser;
+
+LAME_SoftTimer txPeriodTimer;
+
+static void parseArgumentString(ArgumentParser *parser, const uint8_t *str, int size)
+{
+    memset(parser->arguments, 0, sizeof(Argument) * MAX_ARGUMENTS_COUNT);
+    parser->argumentCount = 0;
+
+    if (size >= MAX_COMMAND_SIZE) {
+        return;
+    }
+
+    char buf[MAX_COMMAND_SIZE];
+    memcpy(buf, str, size);
+    buf[size] = 0;
+
+    int   argCount = 0;
+    char *pch      = strtok(buf, " ");
+
+    while (pch != NULL) {
+        if (argCount >= MAX_ARGUMENTS_COUNT) {
+            break;
+        }
+        strncpy(parser->arguments[argCount], pch, sizeof(Argument));
+        argCount++;
+        pch = strtok(NULL, " ");
+    }
+
+    parser->argumentCount = argCount;
+}
 
 // echo to either Serial0 or Serial1
 // with Serial0 as all lower case, Serial1 as all upper case
@@ -34,7 +81,6 @@ static void echo_serial_port(uint8_t itf, uint8_t buf[], uint32_t count)
 
         tud_cdc_n_write_char(itf, buf[i]);
     }
-    tud_cdc_n_write_flush(itf);
 }
 
 // Invoked when device is mounted
@@ -56,21 +102,31 @@ void tud_umount_cb(void)
 //--------------------------------------------------------------------+
 static void cdc_task(void)
 {
-    uint8_t itf;
+    // connected() check for DTR bit
+    // Most but not all terminal client set this when making connection
+    // if ( tud_cdc_n_connected(usb_descr) )
+    {
+        if (tud_cdc_n_available(usb_descr)) {
+            uint8_t buf[64];
 
-    for (itf = 0; itf < CFG_TUD_CDC; itf++) {
-        // connected() check for DTR bit
-        // Most but not all terminal client set this when making connection
-        // if ( tud_cdc_n_connected(itf) )
-        {
-            if (tud_cdc_n_available(itf)) {
-                uint8_t buf[64];
+            uint32_t count = tud_cdc_n_read(usb_descr, buf, sizeof(buf));
 
-                uint32_t count = tud_cdc_n_read(itf, buf, sizeof(buf));
+            // echo back to both serial ports
 
-                // echo back to both serial ports
-                echo_serial_port(itf, buf, count);
+            parseArgumentString(&argumentParser, buf, count);
+
+            char str[30];
+            snprintf(str, sizeof(str), "s %lu: ", count);
+            tud_cdc_n_write_str(usb_descr, str);
+
+            for (int i = 0; i < argumentParser.argumentCount; ++i) {
+                snprintf(str, sizeof(str), "%i-%s ", i, argumentParser.arguments[i]);
+                tud_cdc_n_write_str(usb_descr, str);
             }
+
+            // echo_serial_port(usb_descr, buf, count);
+
+            tud_cdc_n_write_flush(usb_descr);
         }
     }
 }
