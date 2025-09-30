@@ -11,9 +11,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MAX_COMMAND_SIZE    64
-#define MAX_ARGUMENT_SIZE   12
-#define MAX_ARGUMENTS_COUNT 6
+static void setPwmControlChangeTimer(int period_ms);
+static void setPwmControlPwmPeriod(uint32_t period);
+static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle);
+static void setPwmControlSmallDutyCycle(uint32_t smallDutyCycle);
+
+#define MAX_COMMAND_SIZE    100
+#define MAX_ARGUMENT_SIZE   25
+#define MAX_ARGUMENTS_COUNT 4
 
 typedef char Argument[MAX_ARGUMENT_SIZE];
 
@@ -40,8 +45,24 @@ struct {
     uint32_t pwmPeriod;
     uint32_t largeDutyCycle;
     uint32_t smallDutyCycle;
-    int      changePwmPeriod;
+    int      pwmChangePeriod;
 } appSettings;
+
+typedef enum {
+    PwmControlState_Large,
+    PwmControlState_Small,
+} PwmControlState;
+
+typedef struct {
+    LAME_SoftTimer  pwmChangeTimer;
+    PwmControlState state;
+    uint32_t        pwmPeriod;
+    uint32_t        largeDutyCycle;
+    uint32_t        smallDutyCycle;
+    int             pwmChangePeriod;
+} PwmControl;
+
+PwmControl pwmControl;
 
 static void debugOut(const char *str)
 {
@@ -182,10 +203,11 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
 
 static void initAppSetting()
 {
-    appSettings.countOutput    = true;
-    appSettings.pwmPeriod      = 20000; // 20 мс
-    appSettings.largeDutyCycle = 2000;  // 2 мс
-    appSettings.smallDutyCycle = 1000;  // 1 мс
+    appSettings.countOutput     = true;
+    appSettings.pwmPeriod       = 20000; // 20 мс
+    appSettings.largeDutyCycle  = 2000;  // 2 мс
+    appSettings.smallDutyCycle  = 1000;  // 1 мс
+    appSettings.pwmChangePeriod = 1000;  // 1 сек
 }
 
 static bool setPwmPeriod(uint32_t period)
@@ -206,9 +228,10 @@ static bool setSmallDutyCycle(uint32_t smallDutyCycle)
     return true;
 }
 
-static bool setChangePwmPeriod(uint32_t changePwmPeriod)
+static bool setChangePwmPeriod(uint32_t pwmChangePeriod)
 {
-    appSettings.changePwmPeriod = changePwmPeriod;
+    appSettings.pwmChangePeriod = pwmChangePeriod;
+    setPwmControlChangeTimer(appSettings.pwmChangePeriod);
     return true;
 }
 
@@ -218,11 +241,11 @@ static void getStrSettings(char *str)
             "PWM Period - %lu\n"
             "largeDC - %lu\n"
             "smallDC - %lu\n"
-            "changePwmPeriod - %i\n",
+            "pwmChangePeriod - %i\n",
             appSettings.pwmPeriod,
             appSettings.largeDutyCycle,
             appSettings.smallDutyCycle,
-            appSettings.changePwmPeriod);
+            appSettings.pwmChangePeriod);
 }
 
 static const char *getHelp()
@@ -266,7 +289,7 @@ static void processCommandTask()
         uint32_t smallDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setSmallDutyCycle(smallDutyCycle);
     }
-    else if (strcmp(argumentParser.arguments[0], "changePwmPeriod") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "period") == 0) {
         uint32_t period = strtoul(argumentParser.arguments[1], NULL, 10);
         setChangePwmPeriod(period);
     }
@@ -301,6 +324,68 @@ static void countOutputTask()
     }
 }
 
+static void setPwmControlPwmPeriod(uint32_t period)
+{
+    pwmControl.pwmPeriod = period;
+    // TODO Установка ШИМ
+}
+
+static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle)
+{
+    pwmControl.largeDutyCycle = largeDutyCycle;
+    if (pwmControl.state == PwmControlState_Large) {
+        // TODO Установка ШИМ
+    }
+}
+
+static void setPwmControlSmallDutyCycle(uint32_t smallDutyCycle)
+{
+    pwmControl.smallDutyCycle = smallDutyCycle;
+    if (pwmControl.state == PwmControlState_Small) {
+        // TODO Установка ШИМ
+    }
+}
+
+static void setPwmControlChangeTimer(int period_ms)
+{
+    pwmControl.pwmChangePeriod = period_ms;
+    LAME_SoftTimer_Stop(&pwmControl.pwmChangeTimer);
+    LAME_SoftTimer_SetPeriod(&pwmControl.pwmChangeTimer, period_ms);
+    LAME_SoftTimer_Start(&pwmControl.pwmChangeTimer);
+}
+
+static void pwmControlInit()
+{
+    pwmControl.state = PwmControlState_Large;
+    // LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic, 1000);
+
+    setPwmControlPwmPeriod(pwmControl.pwmPeriod);
+    setPwmControlLargeDutyCycle(pwmControl.largeDutyCycle);
+    setPwmControlSmallDutyCycle(pwmControl.pwmChangePeriod);
+    setPwmControlChangeTimer(appSettings.pwmChangePeriod);
+
+    // TODO Настройка ШИМ по умолчанию
+}
+
+static void pwmControlTask()
+{
+    if (!LAME_SoftTimer_Occur(&pwmControl.pwmChangeTimer)) {
+        return;
+    }
+
+    if (pwmControl.state == PwmControlState_Large) {
+        pwmControl.state = PwmControlState_Small;
+        debugOut("PWM SMALL");
+
+        // TODO Настройка ШИМ по маленький
+    }
+    else {
+        pwmControl.state = PwmControlState_Large;
+        // TODO Настройка ШИМ по маленький
+        debugOut("PWM LARGE");
+    }
+}
+
 int main()
 {
     LAME_Event_Init(&key_event);
@@ -310,8 +395,10 @@ int main()
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
 
-    LAME_SoftTimer_Init(&txPeriodTimer, LAME_SoftTimer_ModePeriodic, 1000);
+    LAME_SoftTimer_Init(&txPeriodTimer, LAME_SoftTimer_ModePeriodic, 3000);
     LAME_SoftTimer_Start(&txPeriodTimer);
+
+    pwmControlInit();
 
     while (1) {
         if (LAME_Event_Take(&key_event)) {
@@ -324,6 +411,7 @@ int main()
         // volatile clock_t cl = clock();
         processCommandTask();
         countOutputTask();
+        pwmControlTask();
         LAME_Led_Task();
     }
 }
