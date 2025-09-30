@@ -36,10 +36,14 @@ ArgumentParser argumentParser;
 LAME_SoftTimer txPeriodTimer;
 
 struct {
-    bool countOutput;
+    bool     countOutput;
+    uint32_t pwmPeriod;
+    uint32_t largeDutyCycle;
+    uint32_t smallDutyCycle;
+    int      changePwmPeriod;
 } appSettings;
 
-static void debugOut(char *str)
+static void debugOut(const char *str)
 {
     tud_cdc_n_write_str(usb_descr, str);
     tud_cdc_n_write_char(usb_descr, '\n');
@@ -135,16 +139,18 @@ static void cdc_task(void)
 
             receivedCommand = true;
 
-            char str[30];
-            snprintf(str, sizeof(str), "s %lu: ", count);
-            tud_cdc_n_write_str(usb_descr, str);
+            // { // Отладка ввода
+            //     char str[30];
+            //     snprintf(str, sizeof(str), "s %lu: ", count);
+            //     tud_cdc_n_write_str(usb_descr, str);
 
-            for (int i = 0; i < argumentParser.argumentCount; ++i) {
-                snprintf(str, sizeof(str), "%i-%s ", i, argumentParser.arguments[i]);
-                tud_cdc_n_write_str(usb_descr, str);
-            }
+            //     for (int i = 0; i < argumentParser.argumentCount; ++i) {
+            //         snprintf(str, sizeof(str), "%i-%s ", i, argumentParser.arguments[i]);
+            //         tud_cdc_n_write_str(usb_descr, str);
+            //     }
 
-            tud_cdc_n_write_char(usb_descr, '\n');
+            //     tud_cdc_n_write_char(usb_descr, '\n');
+            // }
 
             // echo_serial_port(usb_descr, buf, count);
 
@@ -176,9 +182,62 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
 
 static void initAppSetting()
 {
-    appSettings.countOutput = true;
+    appSettings.countOutput    = true;
+    appSettings.pwmPeriod      = 20000; // 20 мс
+    appSettings.largeDutyCycle = 2000;  // 2 мс
+    appSettings.smallDutyCycle = 1000;  // 1 мс
 }
 
+static bool setPwmPeriod(uint32_t period)
+{
+    appSettings.pwmPeriod = period;
+    return true;
+}
+
+static bool setLargeDutyCycle(uint32_t largeDutyCycle)
+{
+    appSettings.largeDutyCycle = largeDutyCycle;
+    return true;
+}
+
+static bool setSmallDutyCycle(uint32_t smallDutyCycle)
+{
+    appSettings.smallDutyCycle = smallDutyCycle;
+    return true;
+}
+
+static bool setChangePwmPeriod(uint32_t changePwmPeriod)
+{
+    appSettings.changePwmPeriod = changePwmPeriod;
+    return true;
+}
+
+static void getStrSettings(char *str)
+{
+    sprintf(str,
+            "PWM Period - %lu\n"
+            "largeDC - %lu\n"
+            "smallDC - %lu\n"
+            "changePwmPeriod - %i\n",
+            appSettings.pwmPeriod,
+            appSettings.largeDutyCycle,
+            appSettings.smallDutyCycle,
+            appSettings.changePwmPeriod);
+}
+
+static const char *getHelp()
+{
+    const char *str =
+        "help\n"
+        "showSettings - show settings\n"
+        "pwmPeriod - Set PWM period\n"
+        "largeDC - Set large duty Cycle\n"
+        "smallDC - Set small duty Cycle\n"
+        "period - Set period of change pwm cycle\n"
+        "stop - Stop output Cycle\n"
+        "start - Start output Cycle\n";
+    return str;
+}
 
 static void processCommandTask()
 {
@@ -191,9 +250,37 @@ static void processCommandTask()
         appSettings.countOutput = false;
         debugOut("WAS STOP");
     }
-    if (strcmp(argumentParser.arguments[0], "start") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "start") == 0) {
         appSettings.countOutput = true;
         debugOut("WAS STOP");
+    }
+    else if (strcmp(argumentParser.arguments[0], "pwmPeriod") == 0) {
+        uint32_t pwmPeriod = strtoul(argumentParser.arguments[1], NULL, 10);
+        setPwmPeriod(pwmPeriod);
+    }
+    else if (strcmp(argumentParser.arguments[0], "largeDC") == 0) {
+        uint32_t largeDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
+        setLargeDutyCycle(largeDutyCycle);
+    }
+    else if (strcmp(argumentParser.arguments[0], "smallDC") == 0) {
+        uint32_t smallDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
+        setSmallDutyCycle(smallDutyCycle);
+    }
+    else if (strcmp(argumentParser.arguments[0], "changePwmPeriod") == 0) {
+        uint32_t period = strtoul(argumentParser.arguments[1], NULL, 10);
+        setChangePwmPeriod(period);
+    }
+    else if (strcmp(argumentParser.arguments[0], "showSettings") == 0) {
+        char str[100];
+        getStrSettings(str);
+        debugOut(str);
+    }
+    else if (strcmp(argumentParser.arguments[0], "help") == 0) {
+        debugOut(getHelp());
+    }
+    else {
+        const char *str = "Input error";
+        debugOut(str);
     }
 }
 
