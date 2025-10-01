@@ -271,23 +271,26 @@ static void processCommandTask()
 
     if (strcmp(argumentParser.arguments[0], "stop") == 0) {
         appSettings.countOutput = false;
-        debugOut("WAS STOP");
+        debugOut("Output Stop");
     }
     else if (strcmp(argumentParser.arguments[0], "start") == 0) {
         appSettings.countOutput = true;
-        debugOut("WAS STOP");
+        debugOut("Output Start");
     }
     else if (strcmp(argumentParser.arguments[0], "pwmPeriod") == 0) {
         uint32_t pwmPeriod = strtoul(argumentParser.arguments[1], NULL, 10);
         setPwmPeriod(pwmPeriod);
+        setPwmControlPwmPeriod(pwmPeriod);
     }
     else if (strcmp(argumentParser.arguments[0], "largeDC") == 0) {
         uint32_t largeDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setLargeDutyCycle(largeDutyCycle);
+        setPwmControlLargeDutyCycle(largeDutyCycle);
     }
     else if (strcmp(argumentParser.arguments[0], "smallDC") == 0) {
         uint32_t smallDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setSmallDutyCycle(smallDutyCycle);
+        setPwmControlSmallDutyCycle(smallDutyCycle);
     }
     else if (strcmp(argumentParser.arguments[0], "period") == 0) {
         uint32_t period = strtoul(argumentParser.arguments[1], NULL, 10);
@@ -358,13 +361,12 @@ static void pwmControlInit()
 {
     pwmControl.state = PwmControlState_Large;
 
-    LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic,  appSettings.pwmChangePeriod);
+    LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic, appSettings.pwmChangePeriod);
 
     setPwmControlPwmPeriod(appSettings.pwmPeriod);
     setPwmControlLargeDutyCycle(appSettings.largeDutyCycle);
     setPwmControlSmallDutyCycle(appSettings.smallDutyCycle);
     setPwmControlChangeTimer(appSettings.pwmChangePeriod);
-
 }
 
 static void pwmControlTask()
@@ -375,16 +377,19 @@ static void pwmControlTask()
 
     if (pwmControl.state == PwmControlState_Large) {
         pwmControl.state = PwmControlState_Small;
-        debugOut("PWM SMALL");
-
         Board_SetPwmFront(pwmControl.smallDutyCycle);
+
+        char str[30];
+        sprintf(str, "PWM Small - %lu", pwmControl.smallDutyCycle);
+        debugOut(str);
     }
     else {
         pwmControl.state = PwmControlState_Large;
-        debugOut("PWM LARGE");
-
         Board_SetPwmFront(pwmControl.largeDutyCycle);
 
+        char str[30];
+        sprintf(str, "PWM Large - %lu", pwmControl.largeDutyCycle);
+        debugOut(str);
     }
 }
 
