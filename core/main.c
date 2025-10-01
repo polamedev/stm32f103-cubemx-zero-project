@@ -18,7 +18,7 @@ static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle);
 static void setPwmControlSmallDutyCycle(uint32_t smallDutyCycle);
 
 enum LedState {
-    LedState_PWM_Enable = 1,
+    LedState_PWM_Enable  = 1,
     LedState_PWM_Disable = 2,
 };
 
@@ -65,6 +65,7 @@ typedef struct {
     uint32_t        largeDutyCycle;
     uint32_t        smallDutyCycle;
     int             pwmChangePeriod;
+    int             cycleNumber;
     bool            isActive;
 } PwmControl;
 
@@ -354,19 +355,23 @@ static void setPwmControlActive(bool active)
 
     if (active) {
         // Установка начального состояния
-        pwmControl.state = PwmControlState_Large;
+        pwmControl.state = PwmControlState_Small;
 
+        setPwmControlSmallDutyCycle(pwmControl.smallDutyCycle);
         Board_SetPwmActive(true);
         LAME_SoftTimer_Start(&pwmControl.pwmChangeTimer);
 
         LAME_Led_SetBlinkCount(led, LedState_PWM_Enable);
+
+        char str[50];
+        sprintf(str, "%i: PWM Small T=%lu, DC=%lu\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
+        debugOut(str);
     }
     else {
         Board_SetPwmActive(false);
         LAME_SoftTimer_Stop(&pwmControl.pwmChangeTimer);
 
         LAME_Led_SetBlinkCount(led, LedState_PWM_Disable);
-
     }
 }
 
@@ -402,6 +407,7 @@ static void setPwmControlChangeTimer(int period_ms)
 
 static void pwmControlInit()
 {
+    pwmControl.cycleNumber = 1;
     LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic, appSettings.pwmChangePeriod);
 
     setPwmControlPwmPeriod(appSettings.pwmPeriod);
@@ -414,7 +420,6 @@ static void pwmControlInit()
 
 static void pwmControlTask()
 {
-    static int cycleNumber = 1;
 
     if (!LAME_SoftTimer_Occur(&pwmControl.pwmChangeTimer)) {
         return;
@@ -426,15 +431,15 @@ static void pwmControlTask()
         pwmControl.state = PwmControlState_Small;
         Board_SetPwmFront(pwmControl.smallDutyCycle);
 
-        sprintf(str, "%i: PWM Small T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
+        sprintf(str, "%i: PWM Small T=%lu, DC=%lu\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
     }
     else {
         pwmControl.state = PwmControlState_Large;
         Board_SetPwmFront(pwmControl.largeDutyCycle);
 
-        sprintf(str, "%i: PWM Large T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
+        sprintf(str, "%i: PWM Large T=%lu, DC=%lu\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
 
-        cycleNumber++;
+        pwmControl.cycleNumber++;
     }
     debugOut(str);
 }
