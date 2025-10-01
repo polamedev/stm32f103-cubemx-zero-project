@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+static void setPwmControlActive(bool active);
 static void setPwmControlChangeTimer(int period_ms);
 static void setPwmControlPwmPeriod(uint32_t period);
 static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle);
@@ -38,7 +39,6 @@ LAME_Event key_event;
 
 ArgumentParser argumentParser;
 
-
 struct {
     bool     countOutput;
     uint32_t pwmPeriod;
@@ -59,6 +59,7 @@ typedef struct {
     uint32_t        largeDutyCycle;
     uint32_t        smallDutyCycle;
     int             pwmChangePeriod;
+    bool            isActive;
 } PwmControl;
 
 PwmControl pwmControl;
@@ -269,12 +270,12 @@ static void processCommandTask()
     receivedCommand = false;
 
     if (strcmp(argumentParser.arguments[0], "stop") == 0) {
-        appSettings.countOutput = false;
-        debugOut("Output Stop");
+        setPwmControlActive(false);
+        debugOut("PWM Stop");
     }
     else if (strcmp(argumentParser.arguments[0], "start") == 0) {
-        appSettings.countOutput = true;
-        debugOut("Output Start");
+        setPwmControlActive(true);
+        debugOut("PWM Start");
     }
     else if (strcmp(argumentParser.arguments[0], "period") == 0) {
         uint32_t pwmPeriod = strtoul(argumentParser.arguments[1], NULL, 10);
@@ -313,6 +314,29 @@ static void processCommandTask()
     }
 }
 
+static void setPwmControlActive(bool active)
+{
+    if (pwmControl.isActive == active) {
+        return;
+    }
+
+    pwmControl.isActive = active;
+
+    if (active) {
+        // Установка начального состояния
+        pwmControl.state = PwmControlState_Large;
+
+        Board_SetPwmActive(true);
+        LAME_SoftTimer_Start(&pwmControl.pwmChangeTimer);
+
+    }
+    else {
+        Board_SetPwmActive(false);
+        LAME_SoftTimer_Stop(&pwmControl.pwmChangeTimer);
+
+    }
+}
+
 static void setPwmControlPwmPeriod(uint32_t period)
 {
     pwmControl.pwmPeriod = period;
@@ -345,14 +369,14 @@ static void setPwmControlChangeTimer(int period_ms)
 
 static void pwmControlInit()
 {
-    pwmControl.state = PwmControlState_Large;
-
     LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic, appSettings.pwmChangePeriod);
 
     setPwmControlPwmPeriod(appSettings.pwmPeriod);
     setPwmControlLargeDutyCycle(appSettings.largeDutyCycle);
     setPwmControlSmallDutyCycle(appSettings.smallDutyCycle);
     setPwmControlChangeTimer(appSettings.pwmChangePeriod);
+
+    setPwmControlActive(true);
 }
 
 static void pwmControlTask()
@@ -389,8 +413,6 @@ int main()
     initAppSetting();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
-
-    Board_SetPwmActive(true);
 
     pwmControlInit();
 
