@@ -429,11 +429,12 @@ static void pwmControlTask()
         sprintf(str, "%i: PWM Small T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
     }
     else {
-        cycleNumber++;
         pwmControl.state = PwmControlState_Large;
         Board_SetPwmFront(pwmControl.largeDutyCycle);
 
         sprintf(str, "%i: PWM Large T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
+
+        cycleNumber++;
     }
     debugOut(str);
 }
