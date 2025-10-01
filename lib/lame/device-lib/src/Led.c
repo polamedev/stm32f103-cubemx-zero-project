@@ -37,7 +37,7 @@ static void LAME_Led_UnitTask(LAME_Led led)
 
     if (led->currentCount >= led->blinkCount) {
         led->currentCount = 0;
-        LAME_SoftTimer_SetPeriod(&led->timer, blinkTime * 5);
+        LAME_SoftTimer_SetPeriod(&led->timer, blinkTime * 10);
     }
     else {
         LAME_SoftTimer_SetPeriod(&led->timer, blinkTime);
@@ -92,5 +92,5 @@ bool LAME_Led_GetActive(const LAME_Led led)
 
 void LAME_Led_SetBlinkCount(LAME_Led led, unsigned blinkCount)
 {
-    led->blinkCount = blinkCount;
+    led->blinkCount = blinkCount * 2;
 }
