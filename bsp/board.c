@@ -3,8 +3,12 @@
 #include <cubemx.h>
 #include <st_hal.h>
 
-#include <lame/impl/Pin_Impl.h>
 #include <lame/Led.h>
+#include <lame/impl/Pin_Impl.h>
+
+#define pwm_tim         (&htim1)
+#define pwm_tim_channel (TIM_CHANNEL_1)
+extern TIM_HandleTypeDef htim1;
 
 LAME_Led led;
 
@@ -48,9 +52,9 @@ void pinInit()
         GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
 
         static struct LAME_Pin_Impl led_impl;
-        led_impl.GPIOx = LED_GPIO_Port;
+        led_impl.GPIOx    = LED_GPIO_Port;
         led_impl.GPIO_Pin = LED_Pin;
-        LAME_Pin led_pin = LAME_Pin_init(&led_impl, &GPIO_InitStruct);
+        LAME_Pin led_pin  = LAME_Pin_init(&led_impl, &GPIO_InitStruct);
 
         led = LAME_Led_Create(led_pin, false, 3);
     }
@@ -66,6 +70,45 @@ void led_toggle()
 void nop()
 {
     __NOP();
+}
+
+TIM_HandleTypeDef *board_get_pwm()
+{
+    return &htim1;
+}
+
+void Board_SetPwmActive(bool active)
+{
+    if (active) {
+        HAL_TIM_PWM_Start(pwm_tim, pwm_tim_channel);
+    }
+    else {
+        HAL_TIM_PWM_Stop(pwm_tim, pwm_tim_channel);
+
+    }
+}
+
+static uint32_t mcsToTicks(uint32_t mcs)
+{
+    static const uint32_t HCLK_MHz = 72;
+    uint32_t PRESC = htim1.Init.ClockDivision + 1;
+    uint32_t tick = mcs * (HCLK_MHz ) / PRESC;
+    return tick - 1;
+}
+
+void Board_SetPwmPeriod(int period_mcs)
+{
+    htim1.Init.Period = mcsToTicks(period_mcs);
+    HAL_TIM_Base_Init(&htim1);
+}
+
+void Board_SetPwmFront(int front_mcs)
+{
+    // htim1.Init.AutoReloadPreload = mcsToTicks(front_mcs);
+    // HAL_TIM_Base_Init(&htim1);
+    htim1.Instance->CCR1 = mcsToTicks(front_mcs);
+
+
 }
 
 #define BOARD_GET_UNIQUE_ID 1

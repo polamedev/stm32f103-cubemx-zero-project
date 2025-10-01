@@ -398,6 +398,8 @@ int main()
     LAME_SoftTimer_Init(&txPeriodTimer, LAME_SoftTimer_ModePeriodic, 3000);
     LAME_SoftTimer_Start(&txPeriodTimer);
 
+    Board_SetPwmActive(true);
+
     pwmControlInit();
 
     while (1) {
