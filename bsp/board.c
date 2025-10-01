@@ -84,17 +84,16 @@ void Board_SetPwmActive(bool active)
     }
     else {
         HAL_TIM_PWM_Stop(pwm_tim, pwm_tim_channel);
-
     }
 }
 
 static uint32_t mcsToTicks(uint32_t mcs)
 {
-    static const uint32_t HCLK_MHz = 72;
-    uint32_t clockDivision = htim1.Init.ClockDivision + 1;
-    uint32_t prescaler = htim1.Init.Prescaler + 1;
+    static const uint32_t HCLK_MHz      = 72;
+    uint32_t              clockDivision = htim1.Init.ClockDivision + 1;
+    uint32_t              prescaler     = htim1.Init.Prescaler + 1;
 
-    uint32_t tick = mcs * (HCLK_MHz ) / clockDivision / prescaler;
+    uint32_t tick = mcs * (HCLK_MHz) / clockDivision / prescaler;
     return tick - 1;
 }
 
@@ -109,8 +108,57 @@ void Board_SetPwmFront(int front_mcs)
     // htim1.Init.AutoReloadPreload = mcsToTicks(front_mcs);
     // HAL_TIM_Base_Init(&htim1);
     htim1.Instance->CCR1 = mcsToTicks(front_mcs);
+}
 
+#define USER_FLASH_WRITE_ADDRESS 0x0801F800
 
+bool Board_FlashWrite(const uint32_t *data, size_t dataSize)
+{
+    uint32_t               addr = USER_FLASH_WRITE_ADDRESS;
+    HAL_StatusTypeDef      status;
+    // uint32_t structureSize = sizeof(test_struct);
+    uint32_t               structureSize = dataSize;
+    FLASH_EraseInitTypeDef FlashErase;
+    uint32_t               pageError = 0;
+
+    __disable_irq();
+    status = HAL_FLASH_Unlock();
+
+    FlashErase.TypeErase   = FLASH_TYPEERASE_PAGES;
+    FlashErase.PageAddress = addr;
+    FlashErase.NbPages     = structureSize / 1024 + 1;
+
+    if (HAL_FLASHEx_Erase(&FlashErase, &pageError) != HAL_OK)
+    {
+        HAL_FLASH_Lock();
+        __enable_irq();
+        return false;
+    }
+
+    const uint32_t *dataPtr = data;
+
+    for (uint32_t i = 0; i < structureSize / 4; i++)
+    {
+        status += HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, addr, dataPtr[i]);
+        addr   += 4;
+    }
+    __enable_irq();
+    HAL_FLASH_Lock();
+    return status == HAL_OK;
+}
+
+bool Board_FlashRead(uint32_t *data, size_t dataSize)
+{
+    uint32_t               addr = USER_FLASH_WRITE_ADDRESS;
+
+    uint32_t structureSize = dataSize;
+	uint32_t *dataPtr = data;
+	for (uint32_t i = 0; i < structureSize / 4; i++)
+	{
+		dataPtr[i] = *(__IO uint32_t*)addr;
+		addr += 4;
+	}
+    return true;
 }
 
 #define BOARD_GET_UNIQUE_ID 1

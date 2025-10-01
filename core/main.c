@@ -39,13 +39,14 @@ LAME_Event key_event;
 
 ArgumentParser argumentParser;
 
-struct {
-    bool     countOutput;
+typedef struct {
     uint32_t pwmPeriod;
     uint32_t largeDutyCycle;
     uint32_t smallDutyCycle;
     int      pwmChangePeriod;
-} appSettings;
+} ApSettings;
+
+ApSettings appSettings;
 
 typedef enum {
     PwmControlState_Large,
@@ -203,11 +204,23 @@ void tud_cdc_line_state_cb(uint8_t instance, bool dtr, bool rts)
 
 static void initAppSetting()
 {
-    appSettings.countOutput     = true;
-    appSettings.pwmPeriod       = 20000; // 20 мс
-    appSettings.largeDutyCycle  = 2000;  // 2 мс
-    appSettings.smallDutyCycle  = 1000;  // 1 мс
-    appSettings.pwmChangePeriod = 1000;  // 1 сек
+    static volatile ApSettings appSettingsTemp;
+    Board_FlashRead((uint32_t *)&appSettingsTemp, sizeof(appSettingsTemp));
+
+    if (appSettingsTemp.pwmPeriod == 0xFFFFFFFF) {
+        appSettings.pwmPeriod       = 20000; // 20 мс
+        appSettings.largeDutyCycle  = 2000;  // 2 мс
+        appSettings.smallDutyCycle  = 1000;  // 1 мс
+        appSettings.pwmChangePeriod = 3000;  // 1 сек
+    }
+    else {
+        appSettings = appSettingsTemp;
+    }
+}
+
+static bool saveAppSettings()
+{
+    return Board_FlashWrite((uint32_t *)&appSettings, sizeof(appSettings));
 }
 
 static bool setPwmPeriod(uint32_t period)
@@ -251,14 +264,15 @@ static void getStrSettings(char *str)
 static const char *getHelp()
 {
     const char *str =
-        "help\n"
-        "show    - show settings\n"
+        "help    - Show help\n"
+        "show    - Show settings\n"
         "period  - Set PWM period, mcs\n"
         "largeDC - Set PWM large Duty Cycle, mcs\n"
         "smallDC - Set PWM small Duty Cycle, mcs\n"
         "delay   - Set delay of change pwm cycle, ms\n"
-        "stop    - Stop output Cycle\n"
-        "start   - Start output Cycle\n";
+        "stop    - Stop output PWM\n"
+        "start   - Start output PWM\n"
+        "save    - Save PWM settings to Flash\n";
     return str;
 }
 
@@ -308,6 +322,16 @@ static void processCommandTask()
     else if (strcmp(argumentParser.arguments[0], "help") == 0) {
         debugOut(getHelp());
     }
+    else if (strcmp(argumentParser.arguments[0], "save") == 0) {
+
+        if (saveAppSettings()) {
+            debugOut("Settings is saved");
+        }
+        else {
+            debugOut("Save error!");
+
+        }
+    }
     else {
         const char *str = "Input error";
         debugOut(str);
@@ -328,12 +352,10 @@ static void setPwmControlActive(bool active)
 
         Board_SetPwmActive(true);
         LAME_SoftTimer_Start(&pwmControl.pwmChangeTimer);
-
     }
     else {
         Board_SetPwmActive(false);
         LAME_SoftTimer_Stop(&pwmControl.pwmChangeTimer);
-
     }
 }
 
@@ -427,5 +449,14 @@ int main()
         processCommandTask();
         pwmControlTask();
         LAME_Led_Task();
+
+        static volatile bool needWrite = false;
+        if (needWrite) {
+            needWrite = false;
+            saveAppSettings();
+        }
+
+        static volatile ApSettings appSettingsTemp;
+        Board_FlashRead((uint32_t *)&appSettingsTemp, sizeof(appSettingsTemp));
     }
 }

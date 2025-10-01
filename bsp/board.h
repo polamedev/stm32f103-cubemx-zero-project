@@ -19,3 +19,7 @@ size_t board_usb_get_serial(uint16_t desc_str1[], size_t max_chars);
 void Board_SetPwmActive(bool active);
 void Board_SetPwmPeriod(int period_ms);
 void Board_SetPwmFront(int front_ms);
+
+bool Board_FlashWrite(const uint32_t *data, size_t dataSize);
+bool Board_FlashRead(uint32_t *data, size_t dataSize);
+
