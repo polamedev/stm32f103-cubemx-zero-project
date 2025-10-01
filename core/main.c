@@ -38,7 +38,6 @@ LAME_Event key_event;
 
 ArgumentParser argumentParser;
 
-LAME_SoftTimer txPeriodTimer;
 
 struct {
     bool     countOutput;
@@ -310,23 +309,6 @@ static void processCommandTask()
     }
 }
 
-static void countOutputTask()
-{
-    if (!appSettings.countOutput) {
-        LAME_SoftTimer_Stop(&txPeriodTimer);
-        return;
-    }
-    else {
-        LAME_SoftTimer_Start(&txPeriodTimer);
-    }
-
-    if (LAME_SoftTimer_Occur(&txPeriodTimer)) {
-        const char *tx = "55\n";
-        tud_cdc_n_write_str(usb_descr, tx);
-        tud_cdc_n_write_flush(usb_descr);
-    }
-}
-
 static void setPwmControlPwmPeriod(uint32_t period)
 {
     pwmControl.pwmPeriod = period;
@@ -371,26 +353,28 @@ static void pwmControlInit()
 
 static void pwmControlTask()
 {
+    static int cycleNumber = 1;
+
     if (!LAME_SoftTimer_Occur(&pwmControl.pwmChangeTimer)) {
         return;
     }
+
+    char str[50];
 
     if (pwmControl.state == PwmControlState_Large) {
         pwmControl.state = PwmControlState_Small;
         Board_SetPwmFront(pwmControl.smallDutyCycle);
 
-        char str[30];
-        sprintf(str, "PWM Small - %lu", pwmControl.smallDutyCycle);
-        debugOut(str);
+        sprintf(str, "%i: PWM Small T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
     }
     else {
+        cycleNumber++;
         pwmControl.state = PwmControlState_Large;
         Board_SetPwmFront(pwmControl.largeDutyCycle);
 
-        char str[30];
-        sprintf(str, "PWM Large - %lu", pwmControl.largeDutyCycle);
-        debugOut(str);
+        sprintf(str, "%i: PWM Large T=%lu, DC=%lu\n", cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
     }
+    debugOut(str);
 }
 
 int main()
@@ -401,9 +385,6 @@ int main()
     initAppSetting();
 
     uint32_t timeout = LOW_SPEED_BLINK_TIMEOUT;
-
-    LAME_SoftTimer_Init(&txPeriodTimer, LAME_SoftTimer_ModePeriodic, 3000);
-    LAME_SoftTimer_Start(&txPeriodTimer);
 
     Board_SetPwmActive(true);
 
@@ -417,9 +398,7 @@ int main()
         tud_task(); // tinyusb device task
         cdc_task();
 
-        // volatile clock_t cl = clock();
         processCommandTask();
-        countOutputTask();
         pwmControlTask();
         LAME_Led_Task();
     }
