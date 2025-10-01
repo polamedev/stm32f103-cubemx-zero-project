@@ -17,6 +17,11 @@ static void setPwmControlPwmPeriod(uint32_t period);
 static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle);
 static void setPwmControlSmallDutyCycle(uint32_t smallDutyCycle);
 
+enum LedState {
+    LedState_PWM_Enable = 1,
+    LedState_PWM_Disable = 2,
+};
+
 #define MAX_COMMAND_SIZE    100
 #define MAX_ARGUMENT_SIZE   25
 #define MAX_ARGUMENTS_COUNT 4
@@ -251,10 +256,12 @@ static bool setChangePwmPeriod(uint32_t pwmChangePeriod)
 static void getStrSettings(char *str)
 {
     sprintf(str,
+            "PWM state    - %i\n"
             "PWM Period   - %lu mcs\n"
             "Large PWM DC - %lu mcs\n"
             "Small PWM DC - %lu mcs\n"
             "Change Delay - %i ms\n",
+            pwmControl.isActive,
             appSettings.pwmPeriod,
             appSettings.largeDutyCycle,
             appSettings.smallDutyCycle,
@@ -351,10 +358,15 @@ static void setPwmControlActive(bool active)
 
         Board_SetPwmActive(true);
         LAME_SoftTimer_Start(&pwmControl.pwmChangeTimer);
+
+        LAME_Led_SetBlinkCount(led, LedState_PWM_Enable);
     }
     else {
         Board_SetPwmActive(false);
         LAME_SoftTimer_Stop(&pwmControl.pwmChangeTimer);
+
+        LAME_Led_SetBlinkCount(led, LedState_PWM_Disable);
+
     }
 }
 
