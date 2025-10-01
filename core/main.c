@@ -292,12 +292,12 @@ static void processCommandTask()
     receivedCommand = false;
 
     if (strcmp(argumentParser.arguments[0], "stop") == 0) {
-        setPwmControlActive(false);
         debugOut("PWM Stop");
+        setPwmControlActive(false);
     }
     else if (strcmp(argumentParser.arguments[0], "start") == 0) {
-        setPwmControlActive(true);
         debugOut("PWM Start");
+        setPwmControlActive(true);
     }
     else if (strcmp(argumentParser.arguments[0], "period") == 0) {
         uint32_t pwmPeriod = strtoul(argumentParser.arguments[1], NULL, 10);
