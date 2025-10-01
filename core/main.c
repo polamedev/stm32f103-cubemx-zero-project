@@ -364,7 +364,7 @@ static void setPwmControlActive(bool active)
         LAME_Led_SetBlinkCount(led, LedState_PWM_Enable);
 
         char str[50];
-        sprintf(str, "%i: PWM Small T=%lumcs, DC=%lumcs\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
+        sprintf(str, "%i: PWM Small T=%lumcs, DC=%lumcs", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
         debugOut(str);
     }
     else {
@@ -431,13 +431,13 @@ static void pwmControlTask()
         pwmControl.state = PwmControlState_Small;
         Board_SetPwmFront(pwmControl.smallDutyCycle);
 
-        sprintf(str, "%i: PWM Small T=%lumcs, DC=%lumcs\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
+        sprintf(str, "%i: PWM Small T=%lumcs, DC=%lumcs", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.smallDutyCycle);
     }
     else {
         pwmControl.state = PwmControlState_Large;
         Board_SetPwmFront(pwmControl.largeDutyCycle);
 
-        sprintf(str, "%i: PWM Large T=%lumcs, DC=%lumcs\n", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
+        sprintf(str, "%i: PWM Large T=%lumcs, DC=%lumcs", pwmControl.cycleNumber, pwmControl.pwmPeriod, pwmControl.largeDutyCycle);
 
         pwmControl.cycleNumber++;
     }
