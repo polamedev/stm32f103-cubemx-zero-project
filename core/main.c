@@ -211,7 +211,7 @@ static void initAppSetting()
         appSettings.pwmPeriod       = 20000; // 20 мс
         appSettings.largeDutyCycle  = 2000;  // 2 мс
         appSettings.smallDutyCycle  = 1000;  // 1 мс
-        appSettings.pwmChangePeriod = 3000;  // 1 сек
+        appSettings.pwmChangePeriod = 10000; // 10 сек
     }
     else {
         appSettings = appSettingsTemp;
@@ -252,8 +252,8 @@ static void getStrSettings(char *str)
 {
     sprintf(str,
             "PWM Period   - %lu mcs\n"
-            "PWM Large DC - %lu mcs\n"
-            "PWM Small DC - %lu mcs\n"
+            "Large PWM DC - %lu mcs\n"
+            "Small PWM DC - %lu mcs\n"
             "Change Delay - %i ms\n",
             appSettings.pwmPeriod,
             appSettings.largeDutyCycle,
@@ -267,8 +267,8 @@ static const char *getHelp()
         "help    - Show help\n"
         "show    - Show settings\n"
         "period  - Set PWM period, mcs\n"
-        "largeDC - Set PWM large Duty Cycle, mcs\n"
-        "smallDC - Set PWM small Duty Cycle, mcs\n"
+        "large   - Set large PWM Duty Cycle, mcs\n"
+        "small   - Set small PWM Duty Cycle, mcs\n"
         "delay   - Set delay of change pwm cycle, ms\n"
         "stop    - Stop output PWM\n"
         "start   - Start output PWM\n"
@@ -297,13 +297,13 @@ static void processCommandTask()
         setPwmControlPwmPeriod(pwmPeriod);
         debugOut("PWM Period is set");
     }
-    else if (strcmp(argumentParser.arguments[0], "largeDC") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "large") == 0) {
         uint32_t largeDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setLargeDutyCycle(largeDutyCycle);
         setPwmControlLargeDutyCycle(largeDutyCycle);
         debugOut("Large PWM duty cycle is set");
     }
-    else if (strcmp(argumentParser.arguments[0], "smallDC") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "small") == 0) {
         uint32_t smallDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setSmallDutyCycle(smallDutyCycle);
         setPwmControlSmallDutyCycle(smallDutyCycle);
@@ -329,7 +329,6 @@ static void processCommandTask()
         }
         else {
             debugOut("Save error!");
-
         }
     }
     else {
