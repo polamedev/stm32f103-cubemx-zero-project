@@ -33,13 +33,23 @@ static void clockInit()
         Error_Handler();
     }
 
+
+    /** /
+     * Вывод usb для f103 не нужно ставить а альтернативную функцию
+     * это делается само при включении тактирования usb
+     * Поэтому следующий код не нужен, кроме включения __HAL_RCC_USB_CLK_ENABLE
+     */
+    // USB Pins
+    // Configure USB DM and DP pins.
+    // GPIO_InitTypeDef GPIO_InitStruct;
+    // GPIO_InitStruct.Pin   = (GPIO_PIN_11 | GPIO_PIN_12);
+    // GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
+    // GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    // GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
     /* Включение тактированяи usb */
     __HAL_RCC_USB_CLK_ENABLE();
-
-    /**
-     *  Вывод usb для f103 не нужно ставить а альтернативную функцию
-     * это делается само при включении тактирования usb
-     */
 }
 
 void pinInit()
@@ -149,15 +159,15 @@ bool Board_FlashWrite(const uint32_t *data, size_t dataSize)
 
 bool Board_FlashRead(uint32_t *data, size_t dataSize)
 {
-    uint32_t               addr = USER_FLASH_WRITE_ADDRESS;
+    uint32_t addr = USER_FLASH_WRITE_ADDRESS;
 
-    uint32_t structureSize = dataSize;
-	uint32_t *dataPtr = data;
-	for (uint32_t i = 0; i < structureSize / 4; i++)
-	{
-		dataPtr[i] = *(__IO uint32_t*)addr;
-		addr += 4;
-	}
+    uint32_t  structureSize = dataSize;
+    uint32_t *dataPtr       = data;
+    for (uint32_t i = 0; i < structureSize / 4; i++)
+    {
+        dataPtr[i]  = *(__IO uint32_t *)addr;
+        addr       += 4;
+    }
     return true;
 }
 
