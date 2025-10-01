@@ -327,14 +327,14 @@ static void countOutputTask()
 static void setPwmControlPwmPeriod(uint32_t period)
 {
     pwmControl.pwmPeriod = period;
-    // TODO Установка ШИМ
+    Board_SetPwmPeriod(period);
 }
 
 static void setPwmControlLargeDutyCycle(uint32_t largeDutyCycle)
 {
     pwmControl.largeDutyCycle = largeDutyCycle;
     if (pwmControl.state == PwmControlState_Large) {
-        // TODO Установка ШИМ
+        Board_SetPwmFront(pwmControl.largeDutyCycle);
     }
 }
 
@@ -342,7 +342,7 @@ static void setPwmControlSmallDutyCycle(uint32_t smallDutyCycle)
 {
     pwmControl.smallDutyCycle = smallDutyCycle;
     if (pwmControl.state == PwmControlState_Small) {
-        // TODO Установка ШИМ
+        Board_SetPwmFront(pwmControl.smallDutyCycle);
     }
 }
 
@@ -357,14 +357,14 @@ static void setPwmControlChangeTimer(int period_ms)
 static void pwmControlInit()
 {
     pwmControl.state = PwmControlState_Large;
-    // LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic, 1000);
 
-    setPwmControlPwmPeriod(pwmControl.pwmPeriod);
-    setPwmControlLargeDutyCycle(pwmControl.largeDutyCycle);
-    setPwmControlSmallDutyCycle(pwmControl.pwmChangePeriod);
+    LAME_SoftTimer_Init(&pwmControl.pwmChangeTimer, LAME_SoftTimer_ModePeriodic,  appSettings.pwmChangePeriod);
+
+    setPwmControlPwmPeriod(appSettings.pwmPeriod);
+    setPwmControlLargeDutyCycle(appSettings.largeDutyCycle);
+    setPwmControlSmallDutyCycle(appSettings.smallDutyCycle);
     setPwmControlChangeTimer(appSettings.pwmChangePeriod);
 
-    // TODO Настройка ШИМ по умолчанию
 }
 
 static void pwmControlTask()
@@ -377,12 +377,14 @@ static void pwmControlTask()
         pwmControl.state = PwmControlState_Small;
         debugOut("PWM SMALL");
 
-        // TODO Настройка ШИМ по маленький
+        Board_SetPwmFront(pwmControl.smallDutyCycle);
     }
     else {
         pwmControl.state = PwmControlState_Large;
-        // TODO Настройка ШИМ по маленький
         debugOut("PWM LARGE");
+
+        Board_SetPwmFront(pwmControl.largeDutyCycle);
+
     }
 }
 

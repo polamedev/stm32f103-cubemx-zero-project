@@ -91,8 +91,10 @@ void Board_SetPwmActive(bool active)
 static uint32_t mcsToTicks(uint32_t mcs)
 {
     static const uint32_t HCLK_MHz = 72;
-    uint32_t PRESC = htim1.Init.ClockDivision + 1;
-    uint32_t tick = mcs * (HCLK_MHz ) / PRESC;
+    uint32_t clockDivision = htim1.Init.ClockDivision + 1;
+    uint32_t prescaler = htim1.Init.Prescaler + 1;
+
+    uint32_t tick = mcs * (HCLK_MHz ) / clockDivision / prescaler;
     return tick - 1;
 }
 
