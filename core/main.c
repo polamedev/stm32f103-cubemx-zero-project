@@ -237,10 +237,10 @@ static bool setChangePwmPeriod(uint32_t pwmChangePeriod)
 static void getStrSettings(char *str)
 {
     sprintf(str,
-            "PWM Period - %lu\n"
-            "largeDC - %lu\n"
-            "smallDC - %lu\n"
-            "pwmChangePeriod - %i\n",
+            "PWM Period   - %lu mcs\n"
+            "PWM Large DC - %lu mcs\n"
+            "PWM Small DC - %lu mcs\n"
+            "Change Delay - %i ms\n",
             appSettings.pwmPeriod,
             appSettings.largeDutyCycle,
             appSettings.smallDutyCycle,
@@ -251,13 +251,13 @@ static const char *getHelp()
 {
     const char *str =
         "help\n"
-        "showSettings - show settings\n"
-        "pwmPeriod - Set PWM period\n"
-        "largeDC - Set large duty Cycle\n"
-        "smallDC - Set small duty Cycle\n"
-        "period - Set period of change pwm cycle\n"
-        "stop - Stop output Cycle\n"
-        "start - Start output Cycle\n";
+        "show    - show settings\n"
+        "period  - Set PWM period, mcs\n"
+        "largeDC - Set PWM large Duty Cycle, mcs\n"
+        "smallDC - Set PWM small Duty Cycle, mcs\n"
+        "delay   - Set delay of change pwm cycle, ms\n"
+        "stop    - Stop output Cycle\n"
+        "start   - Start output Cycle\n";
     return str;
 }
 
@@ -276,26 +276,30 @@ static void processCommandTask()
         appSettings.countOutput = true;
         debugOut("Output Start");
     }
-    else if (strcmp(argumentParser.arguments[0], "pwmPeriod") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "period") == 0) {
         uint32_t pwmPeriod = strtoul(argumentParser.arguments[1], NULL, 10);
         setPwmPeriod(pwmPeriod);
         setPwmControlPwmPeriod(pwmPeriod);
+        debugOut("PWM Period is set");
     }
     else if (strcmp(argumentParser.arguments[0], "largeDC") == 0) {
         uint32_t largeDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setLargeDutyCycle(largeDutyCycle);
         setPwmControlLargeDutyCycle(largeDutyCycle);
+        debugOut("Large PWM duty cycle is set");
     }
     else if (strcmp(argumentParser.arguments[0], "smallDC") == 0) {
         uint32_t smallDutyCycle = strtoul(argumentParser.arguments[1], NULL, 10);
         setSmallDutyCycle(smallDutyCycle);
         setPwmControlSmallDutyCycle(smallDutyCycle);
+        debugOut("Small PWM duty cycle is set");
     }
-    else if (strcmp(argumentParser.arguments[0], "period") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "delay") == 0) {
         uint32_t period = strtoul(argumentParser.arguments[1], NULL, 10);
         setChangePwmPeriod(period);
+        debugOut("Delay is set");
     }
-    else if (strcmp(argumentParser.arguments[0], "showSettings") == 0) {
+    else if (strcmp(argumentParser.arguments[0], "show") == 0) {
         char str[100];
         getStrSettings(str);
         debugOut(str);
