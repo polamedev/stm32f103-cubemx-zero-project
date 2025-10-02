@@ -15,11 +15,49 @@ LAME_Led led;
 static void clockInit();
 static void pinInit();
 
+static void usbHwInit(bool needDpLowLevel)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    if (needDpLowLevel) {
+        /*
+        Для blue pill, где D+ подтянута к плюсу с помощью внешнего резистора
+        Необходимо притянуть ногу D+ к низу, чтобы host определил новое подключение
+        Иначе при сбросе не будет организовано повторное подключение по USB, если не было
+        физиеского отключения от USB
+        */
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+
+        /*Configure GPIO pin Output Level */
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+        /*Configure GPIO pin : PA12, a.k.a. USB_DP */
+        GPIO_InitStruct.Pin   = GPIO_PIN_12;
+        GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+        GPIO_InitStruct.Pull  = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        // Задержка для удержания низкого уровнять на D+
+        HAL_Delay(5);
+    }
+
+    GPIO_InitStruct.Pin   = (GPIO_PIN_11 | GPIO_PIN_12);
+    GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* Включение тактирования usb */
+    /* Для F103 После включения USB нога отключается от GPIO, и управляется модулем USB, поэтому ее необязательно переводить в AF  */
+    __HAL_RCC_USB_CLK_ENABLE();
+}
+
 void board_init()
 {
     MX_Init();
     clockInit();
     pinInit();
+    usbHwInit(true);
 }
 
 static void clockInit()
@@ -32,24 +70,6 @@ static void clockInit()
     {
         Error_Handler();
     }
-
-
-    /** /
-     * Вывод usb для f103 не нужно ставить а альтернативную функцию
-     * это делается само при включении тактирования usb
-     * Поэтому следующий код не нужен, кроме включения __HAL_RCC_USB_CLK_ENABLE
-     */
-    // USB Pins
-    // Configure USB DM and DP pins.
-    // GPIO_InitTypeDef GPIO_InitStruct;
-    // GPIO_InitStruct.Pin   = (GPIO_PIN_11 | GPIO_PIN_12);
-    // GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
-    // GPIO_InitStruct.Pull  = GPIO_NOPULL;
-    // GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* Включение тактированяи usb */
-    __HAL_RCC_USB_CLK_ENABLE();
 }
 
 void pinInit()
@@ -70,6 +90,25 @@ void pinInit()
     }
 
     // HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+}
+
+void dcd_connect(uint8_t rhport)
+{
+    (void)rhport;
+
+    // при подключении можно подтянуть ногу к +, которая подключена через резистор к D+
+    // На blue pill такого нет, там D+ подтягивается к + внешним резистором
+    //   HAL_GPIO_WritePin(USB_CONNECT_PORT, USB_CONNECT_PIN, USB_CONNECT_STATE);
+
+    nop();
+}
+
+void dcd_disconnect(uint8_t rhport)
+{
+    (void)rhport;
+    //   HAL_GPIO_WritePin(USB_CONNECT_PORT, USB_CONNECT_PIN, 1-USB_CONNECT_STATE);
+
+    nop();
 }
 
 void led_toggle()
